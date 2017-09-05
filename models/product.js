@@ -26,26 +26,39 @@ Product.findById = (id, cb) => {
 
 Product.insert = (product, cb) => {
     if(conn) {
-        conn.query('INSERT INTO product SET ?', [product], (error, result) => {
-            if(error) {
-                return cb(error);
-            }
-            return cb(null, result.insertId);
+        conn.beginTransaction( err => {
+            if (err) throw err;
+            conn.query('INSERT INTO product SET ?', [product], (error, result) => {
+                if(error) 
+                    return conn.rollback( () => {
+                        return cb(error);
+                    });
+
+                conn.commit( err => {
+                    if (error)
+                        return conn.rollback( () => {
+                            return cb(error);
+                        });
+                    console.log("Success!");
+                    return cb(null, result.insertId);
+                });
+            });
         });
-    }
-    else
+    } else
         return cb('Connection refused');
-    
 }
 
-// Product.update = (product, cb) => {
+
+// Product.update = (product, callback) => {
 //     if(conn) {
 //         conn.query(
 //             'UPDATE product SET name = ?, price = ?, description = ? WHERE id = ?',
 //             [product.name, product.price, product.description, product.id],
 //             (error, result) => {
-//                 if(error) return cb('An error has happened while updating table');
-//                 return cb(null, "Product updated!");
+//                 if(error) {
+//                     return callback('Error actualizando producto');
+//                 }
+//                 return callback(null, "Producto actualizado");
 //             }
 //         )
 //     }
