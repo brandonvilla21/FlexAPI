@@ -7,5 +7,33 @@ router
         Product.all((error, data) => {
             return Product.response(res, error, data);
         });
+    })
+    .get('/:id', (req, res, next) => {
+        Product.findById( req.params.id, (error, data) => {
+            return Product.response(res, error, data);
+        });
+    })
+    .post('/', (req, res, next) => {
+        const product = {
+            product_id: null,
+            description: req.body.description,
+            brand: req.body.brand,
+            flavor: req.body.flavor,
+            expiration_date: req.body.expiration_date,
+            sale_price: req.body.sale_price,
+            buy_price: req.body.buy_price,
+            existence: req.body.existence,
+            max: req.body.max,
+            min: req.body.min
+        };
+        console.log(req.body);        
+        Product.insert(product, (err, data) => {
+            return Product.response(res, err, data);
+        });
+    })
+    .delete('/:id', (req, res, next) => {
+        Product.remove(req.params.id, (err, data) => {
+            return Product.response(res, err, data);
+        });
     });
 module.exports = router;
