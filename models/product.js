@@ -27,7 +27,7 @@ Product.findById = (id, cb) => {
 Product.insert = (product, cb) => {
     if(conn) {
         conn.beginTransaction( err => {
-            if (err) throw err;
+            if (err) return cb( err );
             conn.query('INSERT INTO product SET ?', [product], (error, result) => {
                 if(error) 
                     return conn.rollback( () => {
@@ -61,7 +61,7 @@ Product.insert = (product, cb) => {
 //             }
 //         )
 //     }
-// }
+// }    
 
 Product.remove = (id, cb) => {
     if(conn) {

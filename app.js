@@ -2,7 +2,7 @@ const express = require('express');
 const connection = require('./config/db-connection');
 const bodyParser = require('body-parser');
 const products = require('./routes/products');
-const router = require('./routes/products');
+const customer = require('./routes/customers');
 
 connection.connect( err => {
     if (err) {
@@ -17,6 +17,7 @@ const app = express();
 app.use(bodyParser.json());
 
 app.use('/product', products);
+app.use('/customer', customer);
 
 app.listen(3000);
 
