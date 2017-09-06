@@ -43,3 +43,23 @@ CREATE TABLE provider (
     phone VARCHAR(15),
     PRIMARY KEY (provider_id)
 );
+
+CREATE TABLE productSale (
+    sale_id INT NOT NULL AUTO_INCREMENT,
+    customer_id INT NOT NULL,    
+    employee_id INT NOT NULL,
+    saleDate DATE,
+    subtotal FLOAT,
+    discount FLOAT,
+    total FLOAT,
+    totalPayment FLOAT
+    PRIMARY KEY (sale_id)
+);
+
+CREATE TABLE payment (
+    payment_id INT NOT NULL AUTO_INCREMENT,
+    sale_id INT NOT NULL,
+    paymentAmount FLOAT,
+    paymentDate DATE,
+    PRIMARY KEY (payment_id)
+);
