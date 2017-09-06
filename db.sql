@@ -1,3 +1,4 @@
+USE flex_admin;
 
 CREATE TABLE product (
     product_id INT NOT NULL AUTO_INCREMENT,
@@ -96,8 +97,9 @@ CREATE TABLE devolution (
     purchase_id INT NOT NULL,
     employee_id INT NOT NULL,
     devolution_date DATE,
-    total_returned FLOAT
-)
+    total_returned FLOAT,
+    PRIMARY KEY (devolution_id)
+);
 
 CREATE TABLE devolution_product (
     devolution_id INT NOT NULL,
