@@ -48,7 +48,6 @@ Product.insert = (product, cb) => {
         return cb('Connection refused');
 }
 
-
 // Product.update = (product, callback) => {
 //     if(conn) {
 //         conn.query(
