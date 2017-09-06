@@ -44,7 +44,7 @@ CREATE TABLE provider (
     PRIMARY KEY (provider_id)
 );
 
-CREATE TABLE productSale (
+CREATE TABLE saleProduct (
     sale_id INT NOT NULL AUTO_INCREMENT,
     customer_id INT NOT NULL,    
     employee_id INT NOT NULL,
@@ -52,14 +52,59 @@ CREATE TABLE productSale (
     subtotal FLOAT,
     discount FLOAT,
     total FLOAT,
-    totalPayment FLOAT
+    total_payment FLOAT,
     PRIMARY KEY (sale_id)
+);
+
+CREATE TABLE product_saleProduct (
+    sale_id INT NOT NULL,
+    product_id INT NOT NULL,    
+    employee_id INT NOT NULL,
+    price FLOAT,
+    amount INT,
+    PRIMARY KEY (sale_id, product_id)
 );
 
 CREATE TABLE payment (
     payment_id INT NOT NULL AUTO_INCREMENT,
     sale_id INT NOT NULL,
-    paymentAmount FLOAT,
-    paymentDate DATE,
+    payment_amount FLOAT,
+    payment_date DATE,
     PRIMARY KEY (payment_id)
 );
+
+CREATE TABLE purchaseProduct (
+    purchase_id INT NOT NULL AUTO_INCREMENT,
+    provider_id INT NOT NULL,
+    purchase_date DATE,
+    subtotal FLOAT,
+    discount FLOAT,
+    total FLOAT,
+    PRIMARY KEY (purchase_id)
+);
+
+CREATE TABLE product_purchaseProduct (
+    purchase_id INT NOT NULL,
+    product_id INT NOT NULL,
+    price FLOAT,
+    amount INT,
+    PRIMARY KEY (purchase_id)
+);
+
+CREATE TABLE devolution (
+    devolution_id INT NOT NULL AUTO_INCREMENT,
+    purchase_id INT NOT NULL,
+    employee_id INT NOT NULL,
+    devolution_date DATE,
+    total_returned FLOAT
+)
+
+CREATE TABLE devolution_product (
+    devolution_id INT NOT NULL,
+    product_id INT NOT NULL,
+    price FLOAT,
+    amount INT,
+    PRIMARY KEY (devolution_id)
+);
+
+
