@@ -74,22 +74,6 @@ Employee.update = (employee, cb) => {
         });
     } else 
         return cb('Connection refused!');
-
-
-
-
-    // if(conn) {
-    //     conn.query(
-    //         'UPDATE products SET name = ?, price = ?, description = ? WHERE id = ?',
-    //         [product.name, product.price, product.description, product.id],
-    //         (error, result) => {
-    //             if(error) {
-    //                 return callback('Error actualizando producto');
-    //             }
-    //             return callback(null, "Producto actualizado");
-    //         }
-    //     )
-    // }
 }
 
 Employee.remove = ( id, cb ) => {
