@@ -48,6 +48,50 @@ Employee.insert = ( employee, cb ) => {
         return cb('Connection refused!');
 }
 
+Employee.update = (employee, cb) => {
+    
+    if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query(
+                'UPDATE employee SET name = ?, lastname = ?, address = ?, whatsapp = ? WHERE employee_id = ?',
+                [employee.name, employee.lastname, employee.address, employee.whatsapp, employee.employee_id], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result.insertId );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+
+
+
+
+    // if(conn) {
+    //     conn.query(
+    //         'UPDATE products SET name = ?, price = ?, description = ? WHERE id = ?',
+    //         [product.name, product.price, product.description, product.id],
+    //         (error, result) => {
+    //             if(error) {
+    //                 return callback('Error actualizando producto');
+    //             }
+    //             return callback(null, "Producto actualizado");
+    //         }
+    //     )
+    // }
+}
+
 Employee.remove = ( id, cb ) => {
     if ( connection ) {
         connection.query('DELETE FROM employee WHERE employee_id = ?', [id], (error, result) => {
