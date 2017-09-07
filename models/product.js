@@ -48,20 +48,37 @@ Product.insert = (product, cb) => {
         return cb('Connection refused');
 }
 
-// Product.update = (product, callback) => {
-//     if(conn) {
-//         conn.query(
-//             'UPDATE product SET name = ?, price = ?, description = ? WHERE id = ?',
-//             [product.name, product.price, product.description, product.id],
-//             (error, result) => {
-//                 if(error) {
-//                     return callback('Error actualizando producto');
-//                 }
-//                 return callback(null, "Producto actualizado");
-//             }
-//         )
-//     }
-// }    
+Product.update = (product, cb) => {
+    
+    if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query(
+                `UPDATE product SET description = ?, brand = ?, flavor = ?, expiration_date = ?, sale_price = ? 
+                 buy_price = ?, existence = ?, max = ?, min = ?, WHERE product_id = ?`
+                ,
+                [product.description, product.brand, product.flavor, product.expiration_date,
+                 product.sale_price, product.buy_price, product.existence, product.max, product.min, 
+                 product.product_id], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result.insertId );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
 
 Product.remove = (id, cb) => {
     if(conn) {
