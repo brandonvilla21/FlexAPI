@@ -1,3 +1,4 @@
+USE flex_admin;
 
 CREATE TABLE product (
     product_id INT NOT NULL AUTO_INCREMENT,
@@ -43,3 +44,69 @@ CREATE TABLE provider (
     phone VARCHAR(15),
     PRIMARY KEY (provider_id)
 );
+
+CREATE TABLE saleProduct (
+    sale_id INT NOT NULL AUTO_INCREMENT,
+    customer_id INT NOT NULL,    
+    employee_id INT NOT NULL,
+    saleDate DATE,
+    subtotal FLOAT,
+    discount FLOAT,
+    total FLOAT,
+    total_payment FLOAT,
+    PRIMARY KEY (sale_id)
+);
+
+CREATE TABLE product_saleProduct (
+    sale_id INT NOT NULL,
+    product_id INT NOT NULL,    
+    employee_id INT NOT NULL,
+    price FLOAT,
+    amount INT,
+    PRIMARY KEY (sale_id, product_id)
+);
+
+CREATE TABLE payment (
+    payment_id INT NOT NULL AUTO_INCREMENT,
+    sale_id INT NOT NULL,
+    payment_amount FLOAT,
+    payment_date DATE,
+    PRIMARY KEY (payment_id)
+);
+
+CREATE TABLE purchaseProduct (
+    purchase_id INT NOT NULL AUTO_INCREMENT,
+    provider_id INT NOT NULL,
+    purchase_date DATE,
+    subtotal FLOAT,
+    discount FLOAT,
+    total FLOAT,
+    PRIMARY KEY (purchase_id)
+);
+
+CREATE TABLE product_purchaseProduct (
+    purchase_id INT NOT NULL,
+    product_id INT NOT NULL,
+    price FLOAT,
+    amount INT,
+    PRIMARY KEY (purchase_id)
+);
+
+CREATE TABLE devolution (
+    devolution_id INT NOT NULL AUTO_INCREMENT,
+    purchase_id INT NOT NULL,
+    employee_id INT NOT NULL,
+    devolution_date DATE,
+    total_returned FLOAT,
+    PRIMARY KEY (devolution_id)
+);
+
+CREATE TABLE devolution_product (
+    devolution_id INT NOT NULL,
+    product_id INT NOT NULL,
+    price FLOAT,
+    amount INT,
+    PRIMARY KEY (devolution_id)
+);
+
+

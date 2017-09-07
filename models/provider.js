@@ -1,10 +1,10 @@
 const connection = require('../config/db-connection');
 
-let Customer = {}
+let Provider = {}
 
-Customer.all = cb => {
+Provider.all = cb => {
     if ( connection ) {
-        connection.query('SELECT * FROM customer', (error, result) => {
+        connection.query('SELECT * FROM provider', (error, result) => {
             if (error)
                 return cb(error);
             return cb(null, result);
@@ -13,9 +13,9 @@ Customer.all = cb => {
         return cb('Connection refused!');
 }
 
-Customer.findById = ( id, cb ) => {
+Provider.findById = ( id, cb ) => {
     if ( connection ) {
-        connection.query('SELECT * FROM customer WHERE customer_id = ?', [id], (error, result) => {
+        connection.query('SELECT * FROM provider WHERE provider_id = ?', [id], (error, result) => {
             if ( error ) 
                 return cb( error );
             return cb( null, result );
@@ -23,41 +23,13 @@ Customer.findById = ( id, cb ) => {
     }
 }
 
-Customer.insert = ( customer, cb ) => {
+Provider.insert = ( provider, cb ) => {
     if ( connection ) {
         connection.beginTransaction( error => {
             if ( error )
                 return cb( error );
 
-            connection.query('INSERT INTO customer SET ?', [customer], (error, result) => {
-                if ( error )
-                    return connection.rollback( () => {
-                        return cb ( error );
-                    });
-                connection.commit( error => {
-                    if ( error )
-                        return connection.rollback( () => {
-                            return cb ( error );
-                        });
-                    console.log('Success!');
-                    return cb( null, result );
-                });
-            });
-        });
-    } else 
-        return cb('Connection refused!');
-}
-
-Customer.update = (customer, cb) => {
-    
-    if ( connection ) {
-        connection.beginTransaction( error => {
-            if ( error )
-                return cb( error );
-
-            connection.query(
-                'UPDATE customer SET name = ?, lastname = ?, reference = ?, whatsapp = ?, facebook = ?, balance = ? WHERE customer_id = ?',
-                [customer.name, customer.lastname, customer.reference, customer.whatsapp, customer.facebook, customer.balance, customer.customer_id], (error, result) => {
+            connection.query('INSERT INTO provider SET ?', [provider], (error, result) => {
                 if ( error )
                     return connection.rollback( () => {
                         return cb ( error );
@@ -76,9 +48,37 @@ Customer.update = (customer, cb) => {
         return cb('Connection refused!');
 }
 
-Customer.remove = ( id, cb ) => {
+Provider.update = (provider, cb) => {
+    
     if ( connection ) {
-        connection.query('DELETE FROM customer WHERE customer_id = ?', [id], (error, result) => {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query(
+                'UPDATE provider SET name = ?, description = ?, email = ?, phone = ?, contact = ? WHERE provider_id = ?',
+                [provider.name, provider.description, provider.email, provider.phone, provider.contact, provider.provider_id], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result.insertId );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
+
+Provider.remove = ( id, cb ) => {
+    if ( connection ) {
+        connection.query('DELETE FROM provider WHERE provider_id = ?', [id], (error, result) => {
             if ( error )
                 return cb(error);
             return cb( null, result );
@@ -86,11 +86,11 @@ Customer.remove = ( id, cb ) => {
     }
 }
 
-Customer.response = (res, error, data) => {
+Provider.response = (res, error, data) => {
     if ( error )
         res.status(500).json(error);
     else
         res.status(200).json(data);
 }
 
-module.exports = Customer;
+module.exports = Provider;
