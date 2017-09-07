@@ -40,7 +40,7 @@ Customer.insert = ( customer, cb ) => {
                             return cb ( error );
                         });
                     console.log('Success!');
-                    return cb( null, result.insertId );
+                    return cb( null, result );
                 });
             });
         });
@@ -50,7 +50,7 @@ Customer.insert = ( customer, cb ) => {
 
 Customer.remove = ( id, cb ) => {
     if ( connection ) {
-        connection.query('DELETE FROM customer WHERE cutomer_id = ?', [id], (error, result) => {
+        connection.query('DELETE FROM customer WHERE customer_id = ?', [id], (error, result) => {
             if ( error )
                 return cb(error);
             return cb( null, result );

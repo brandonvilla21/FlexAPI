@@ -40,7 +40,7 @@ Product.insert = (product, cb) => {
                             return cb(error);
                         });
                     console.log("Success!");
-                    return cb(null, result.insertId);
+                    return cb(null, result);
                 });
             });
         });
