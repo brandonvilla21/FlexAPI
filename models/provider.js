@@ -48,6 +48,34 @@ Provider.insert = ( provider, cb ) => {
         return cb('Connection refused!');
 }
 
+Provider.update = (provider, cb) => {
+    
+    if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query(
+                'UPDATE provider SET name = ?, description = ?, email = ?, phone = ?, contact = ? WHERE provider_id = ?',
+                [provider.name, provider.description, provider.email, provider.phone, provider.contact, provider.provider_id], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result.insertId );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
+
 Provider.remove = ( id, cb ) => {
     if ( connection ) {
         connection.query('DELETE FROM provider WHERE provider_id = ?', [id], (error, result) => {
