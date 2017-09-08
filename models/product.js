@@ -50,25 +50,25 @@ Product.insert = (product, cb) => {
 
 Product.update = (product, cb) => {
     
-    if ( connection ) {
-        connection.beginTransaction( error => {
+    if ( conn ) {
+        conn.beginTransaction( error => {
             if ( error )
                 return cb( error );
-
-            connection.query(
-                `UPDATE product SET description = ?, brand = ?, flavor = ?, expiration_date = ?, sale_price = ? 
-                 buy_price = ?, existence = ?, max = ?, min = ?, WHERE product_id = ?`
+            console.log(JSON.stringify(product, null, ' '))
+            conn.query(
+                `UPDATE product SET description = ?, brand = ?, flavor = ?, expiration_date = ?, sale_price = ?, 
+                 buy_price = ?, existence = ?, max = ?, min = ? WHERE product_id = ?`
                 ,
                 [product.description, product.brand, product.flavor, product.expiration_date,
                  product.sale_price, product.buy_price, product.existence, product.max, product.min, 
                  product.product_id], (error, result) => {
                 if ( error )
-                    return connection.rollback( () => {
+                    return conn.rollback( () => {
                         return cb ( error );
                     });
-                connection.commit( error => {
+                conn.commit( error => {
                     if ( error )
-                        return connection.rollback( () => {
+                        return conn.rollback( () => {
                             return cb ( error );
                         });
                     console.log('Success!');
