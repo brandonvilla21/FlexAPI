@@ -54,7 +54,6 @@ Product.update = (product, cb) => {
         conn.beginTransaction( error => {
             if ( error )
                 return cb( error );
-            console.log(JSON.stringify(product, null, ' '))
             conn.query(
                 `UPDATE product SET description = ?, brand = ?, flavor = ?, expiration_date = ?, sale_price = ?, 
                  buy_price = ?, existence = ?, max = ?, min = ? WHERE product_id = ?`

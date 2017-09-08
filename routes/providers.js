@@ -24,7 +24,6 @@ router
             phone: req.body.phone,
             contact: req.body.contact
         }
-        console.log(provider);
         Provider.insert(provider, (error, data) => {
             return Provider.response(res, error, data);
         })

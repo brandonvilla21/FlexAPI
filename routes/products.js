@@ -28,7 +28,6 @@ router
             max: req.body.max,
             min: req.body.min
         };
-        console.log(req.body);        
         Product.insert(product, (err, data) => {
             return Product.response(res, err, data);
         });
