@@ -23,6 +23,18 @@ Provider.findById = ( id, cb ) => {
     }
 }
 
+Provider.findByColumn = ( column, value, cb ) => {
+    if ( connection ) {
+        const sql = `SELECT * FROM provider WHERE ${column} LIKE '${value}%'`;
+        console.log(sql);
+        connection.query(sql, (error, result) => {
+            if ( error ) 
+                return cb( error );
+            return cb( null, result );
+        });
+    }
+}
+
 Provider.insert = ( provider, cb ) => {
     if ( connection ) {
         connection.beginTransaction( error => {

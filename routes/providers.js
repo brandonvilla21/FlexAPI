@@ -14,6 +14,12 @@ router
             return Provider.response(res, error, data);
         });
     })
+    
+    .get('/byColumn/:column/:value', (req, res, next) => {
+        Provider.findByColumn(req.params.column, req.params.value, (error, data) => {
+            return Provider.response(res, error, data);
+        });
+    })
 
     .post('/', (req, res, next) => {
         const provider = {
