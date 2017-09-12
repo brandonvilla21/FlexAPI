@@ -24,6 +24,15 @@ Product.findById = (id, cb) => {
     }
 }
 
+Product.findByParam = (column, param, cb) => {
+  if (conn) {
+      conn.query(`SELECT * FROM product WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
+          if (error) return cb(error);
+          return cb(null, row);
+      })
+  }
+}
+
 Product.insert = (product, cb) => {
     if(conn) {
         conn.beginTransaction( err => {

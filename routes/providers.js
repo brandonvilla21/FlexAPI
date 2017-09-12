@@ -21,6 +21,12 @@ router
         });
     })
 
+    .get('/byColumn/:column/:param', (req, res, next) => {
+        Provider.findByParam( req.params.column, req.params.param, (error, data) => {
+            return Provider.response(res, error, data);
+        });
+      })
+
     .post('/', (req, res, next) => {
         const provider = {
             provider_id: null,
