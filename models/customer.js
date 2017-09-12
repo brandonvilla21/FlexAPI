@@ -23,6 +23,15 @@ Customer.findById = ( id, cb ) => {
     }
 }
 
+Customer.findByParam = (column, param, cb) => {
+    if (connection) {
+        connection.query(`SELECT * FROM customer WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
+            if (error) return cb(error);
+            return cb(null, row);
+        })
+    }
+  }
+
 Customer.insert = ( customer, cb ) => {
     if ( connection ) {
         connection.beginTransaction( error => {
