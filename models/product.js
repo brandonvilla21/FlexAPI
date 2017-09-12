@@ -24,9 +24,9 @@ Product.findById = (id, cb) => {
     }
 }
 
-Product.findByDescription = (id, cb) => {
+Product.findByParam = (column, param, cb) => {
   if (conn) {
-      conn.query("SELECT * FROM product WHERE description LIKE ?", [`${id}%`], (error, row) => {
+      conn.query(`SELECT * FROM product WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
           if (error) return cb(error);
           return cb(null, row);
       })

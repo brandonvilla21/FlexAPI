@@ -15,8 +15,8 @@ router
         });
     })
     
-    .get('/description/:id', (req, res, next) => {
-      Product.findByDescription( req.params.id, (error, data) => {
+    .get('/byColumn/:column/:param', (req, res, next) => {
+      Product.findByParam( req.params.column, req.params.param, (error, data) => {
           return Product.response(res, error, data);
       });
     })
