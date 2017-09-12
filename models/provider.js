@@ -23,6 +23,15 @@ Provider.findById = ( id, cb ) => {
     }
 }
 
+Provider.findByParam = (column, param, cb) => {
+    if (connection) {
+        connection.query(`SELECT * FROM provider WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
+            if (error) return cb(error);
+            return cb(null, row);
+        })
+    }
+  }
+
 Provider.insert = ( provider, cb ) => {
     if ( connection ) {
         connection.beginTransaction( error => {

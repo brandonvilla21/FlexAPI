@@ -30,7 +30,7 @@ Customer.findByParam = (column, param, cb) => {
             return cb(null, row);
         })
     }
-  }
+}
 
 Customer.insert = ( customer, cb ) => {
     if ( connection ) {
