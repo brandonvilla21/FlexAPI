@@ -16,6 +16,12 @@ router
         });
     })
 
+    .get('/byColumn/:column/:param', (req, res, next) => {
+        Employee.findByParam( req.params.column, req.params.param, (error, data) => {
+            return Employee.response(res, error, data);
+        });
+      })
+
     .post('/', (req, res, next) => {
         const employee = {
             employee_id: null,

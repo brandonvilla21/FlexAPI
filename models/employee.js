@@ -23,6 +23,15 @@ Employee.findById = ( id, cb ) => {
     }
 }
 
+Employee.findByParam = (column, param, cb) => {
+    if (connection) {
+        connection.query(`SELECT * FROM employee WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
+            if (error) return cb(error);
+            return cb(null, row);
+        })
+    }
+  }
+
 Employee.insert = ( employee, cb ) => {
     if ( connection ) {
         connection.beginTransaction( error => {
