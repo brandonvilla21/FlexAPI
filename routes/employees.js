@@ -24,7 +24,6 @@ router
             address: req.body.address,
             whatsapp: req.body.whatsapp
         }
-        console.log(employee);
         Employee.insert(employee, (error, data) => {
             return Employee.response(res, error, data);
         })

@@ -1,12 +1,18 @@
 const express = require('express');
 const connection = require('./config/db-connection');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 
 //Route importation.
 const products = require('./routes/products');
 const customer = require('./routes/customers');
 const employee = require('./routes/employees');
 const provider = require('./routes/providers');
+
+const app = express();
+
+//CORS
+app.use(cors());
 
 
 connection.connect( err => {
@@ -16,8 +22,6 @@ connection.connect( err => {
     }
     console.log('Connected as id ' + connection.threadId);
 });
-
-const app = express();
 
 app.use(bodyParser.json());
 

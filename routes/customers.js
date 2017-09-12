@@ -25,7 +25,6 @@ router
             facebook: req.body.facebook,
             balance: req.body.balance,
         }
-        console.log(customer);
         Customer.insert(customer, (error, data) => {
             return Customer.response(res, error, data);
         })
