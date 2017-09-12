@@ -24,6 +24,15 @@ Product.findById = (id, cb) => {
     }
 }
 
+Product.findByDescription = (id, cb) => {
+  if (conn) {
+      conn.query("SELECT * FROM product WHERE description LIKE ?", [`${id}%`], (error, row) => {
+          if (error) return cb(error);
+          return cb(null, row);
+      })
+  }
+}
+
 Product.insert = (product, cb) => {
     if(conn) {
         conn.beginTransaction( err => {

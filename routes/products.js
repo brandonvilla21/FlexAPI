@@ -14,6 +14,12 @@ router
             return Product.response(res, error, data);
         });
     })
+    
+    .get('/description/:id', (req, res, next) => {
+      Product.findByDescription( req.params.id, (error, data) => {
+          return Product.response(res, error, data);
+      });
+    })
 
     .post('/', (req, res, next) => {
         const product = {
