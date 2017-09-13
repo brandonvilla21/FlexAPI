@@ -8,6 +8,7 @@ const products = require('./routes/products');
 const customer = require('./routes/customers');
 const employee = require('./routes/employees');
 const provider = require('./routes/providers');
+const purchaseProduct = require('./routes/purchasesProduct');
 
 const app = express();
 
@@ -25,10 +26,14 @@ connection.connect( err => {
 
 app.use(bodyParser.json());
 
+//
 app.use('/product', products);
 app.use('/customer', customer);
 app.use('/employee', employee);
 app.use('/provider', provider);
+
+//Processes.
+app.use('/purchaseProduct', purchaseProduct);
 
 
 app.listen(3000);
