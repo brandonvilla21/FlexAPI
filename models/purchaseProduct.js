@@ -1,4 +1,5 @@
 const connection = require('../config/db-connection');
+var values = require('object.values');
 
 let PurchaseProduct = {}
 
@@ -33,7 +34,6 @@ PurchaseProduct.findByParam = (column, param, cb) => {
 }
 
 PurchaseProduct.insert = ( purchaseProduct, cb ) => {
-    console.log(purchaseProduct);
     if ( connection ) {
         connection.beginTransaction( error => {
             if ( error )
@@ -44,19 +44,53 @@ PurchaseProduct.insert = ( purchaseProduct, cb ) => {
                     return connection.rollback( () => {
                         return cb ( error );
                     });
-                    
-                connection.commit( error => {
-                    if ( error )
-                        return connection.rollback( () => {
-                            return cb ( error );
-                        });
-                    console.log('Success!');
-                    return cb( null, result.insertId );
+
                 });
-            });
+
+
+            let vals = [];
+            purchaseProduct.product_purchaseProduct
+                    .forEach( element => vals.push(values( element )));
+
+            connection.query('INSERT INTO product_purchaseProduct (purchase_id, product_id, price, amount) VALUES ?', [vals], (error, result2) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+
+                    connection.commit( error => {
+                        if ( error )
+                            return connection.rollback( () => {
+                                return cb ( error );
+                            });
+                        console.log('Success!');
+                        return cb( null, result2.insertId );
+                    });
+                    
+                });
+
+            //Inserts multiple records.
+                
+                
+                // PurchaseProduct.getDetailQuery(purchaseProduct.product_purchaseProduct, connection);
+
+
+
+
         });
     } else 
         return cb('Connection refused!');
+}
+
+PurchaseProduct.getDetailQuery = (arrayDetails, connection) => {
+    let sql = "";
+
+    return;
+    // for(var v in values)
+    //     sql += "('" + connection.escape(values[v]) + "'),";
+      
+    //   sql = sql.substr(0,sql.length-1);
+
 }
 
 // PurchaseProduct.update = (customer, cb) => {
