@@ -15,11 +15,11 @@ router
         });
     })
 
-    // .get('/byColumn/:column/:param', (req, res, next) => {
-    //     PurchaseProduct.findByParam( req.params.column, req.params.param, (error, data) => {
-    //         return PurchaseProduct.response(res, error, data);
-    //     });
-    //   })
+    .get('/byColumn/:column/:param', (req, res, next) => {
+        PurchaseProduct.findByParam( req.params.column, req.params.param, (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        });
+      })
 
     // .post('/', (req, res, next) => {
     //     const purchaseProduct = {

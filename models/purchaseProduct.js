@@ -23,14 +23,14 @@ PurchaseProduct.findById = ( id, cb ) => {
     }
 }
 
-// PurchaseProduct.findByParam = (column, param, cb) => {
-//     if (connection) {
-//         connection.query(`SELECT * FROM customer WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
-//             if (error) return cb(error);
-//             return cb(null, row);
-//         })
-//     }
-// }
+PurchaseProduct.findByParam = (column, param, cb) => {
+    if (connection) {
+        connection.query(`SELECT * FROM purchaseProduct WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
+            if (error) return cb(error);
+            return cb(null, row);
+        })
+    }
+}
 
 // PurchaseProduct.insert = ( customer, cb ) => {
 //     if ( connection ) {
