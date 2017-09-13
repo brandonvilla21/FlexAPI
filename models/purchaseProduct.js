@@ -15,7 +15,7 @@ PurchaseProduct.all = cb => {
 
 PurchaseProduct.findById = ( id, cb ) => {
     if ( connection ) {
-        connection.query('SELECT * FROM purchaseProduct WHERE sale_id = ?', [id], (error, result) => {
+        connection.query('SELECT * FROM purchaseProduct WHERE purchase_id = ?', [id], (error, result) => {
             if ( error ) 
                 return cb( error );
             return cb( null, result );
