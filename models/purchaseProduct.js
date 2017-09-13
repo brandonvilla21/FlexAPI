@@ -32,30 +32,32 @@ PurchaseProduct.findByParam = (column, param, cb) => {
     }
 }
 
-// PurchaseProduct.insert = ( customer, cb ) => {
-//     if ( connection ) {
-//         connection.beginTransaction( error => {
-//             if ( error )
-//                 return cb( error );
+PurchaseProduct.insert = ( purchaseProduct, cb ) => {
+    console.log(purchaseProduct);
+    if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
 
-//             connection.query('INSERT INTO customer SET ?', [customer], (error, result) => {
-//                 if ( error )
-//                     return connection.rollback( () => {
-//                         return cb ( error );
-//                     });
-//                 connection.commit( error => {
-//                     if ( error )
-//                         return connection.rollback( () => {
-//                             return cb ( error );
-//                         });
-//                     console.log('Success!');
-//                     return cb( null, result.insertId );
-//                 });
-//             });
-//         });
-//     } else 
-//         return cb('Connection refused!');
-// }
+            connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                    
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result.insertId );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
 
 // PurchaseProduct.update = (customer, cb) => {
     

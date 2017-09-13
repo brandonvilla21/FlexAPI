@@ -21,20 +21,20 @@ router
         });
       })
 
-    // .post('/', (req, res, next) => {
-    //     const purchaseProduct = {
-    //         purchaseProduct_id: null,
-    //         name: req.body.name,
-    //         lastname: req.body.lastname,
-    //         reference: req.body.reference,
-    //         whatsapp: req.body.whatsapp,
-    //         facebook: req.body.facebook,
-    //         balance: req.body.balance,
-    //     }
-    //     PurchaseProduct.insert(purchaseProduct, (error, data) => {
-    //         return PurchaseProduct.response(res, error, data);
-    //     })
-    // })
+    .post('/', (req, res, next) => {
+        const purchaseProduct = {
+            purchase_id: null,
+            provider_id: req.body.provider_id,
+            purchase_date: req.body.purchase_date,
+            subtotal: req.body.subtotal,
+            discount: req.body.discount,
+            total: req.body.total,
+            product_purchaseProduct: req.body.product_purchaseProduct
+        }
+        PurchaseProduct.insert(purchaseProduct, (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        })
+    })
 
     // .put('/:id', (req, res, next) => {
     //     const purchaseProduct = {
