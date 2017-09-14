@@ -16,7 +16,7 @@ router
     })
     
     .get('/byColumn/:column/:value', (req, res, next) => {
-        Provider.findByColumn(req.params.column, req.params.value, (error, data) => {
+        Provider.findByParam(req.params.column, req.params.value, (error, data) => {
             return Provider.response(res, error, data);
         });
     })
