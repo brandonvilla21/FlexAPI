@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const PurchaseProduct = require('../models/purchaseProduct');
-var values = require('object.values');
+const values = require('object.values');
+const async = require('async');
 
 
 router
@@ -35,11 +36,24 @@ router
 
         let detailRows = [];
 
-        req.body.product_purchaseProduct.forEach( element => detailRows.push(values( element )));
+        // const callback =        PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
+        //     return PurchaseProduct.response(res, error, data);
+        // })
 
-        PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
-            return PurchaseProduct.response(res, error, data);
+
+        async.each(req.body.product_purchaseProduct, (item, callback) => {
+            detailRows.push(values( item ));
+            callback();
+        }, (err) => {
+            if(err){
+                PurchaseProduct.response(err);
+            } else {
+                PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
+                        return PurchaseProduct.response(res, error, data);
+                    })   
+            }
         })
+
     })
 
     // .put('/:id', (req, res, next) => {
