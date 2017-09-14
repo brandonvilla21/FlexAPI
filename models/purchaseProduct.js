@@ -39,43 +39,33 @@ PurchaseProduct.insert = ( purchaseProduct, cb ) => {
             if ( error )
                 return cb( error );
 
-            connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
-                if ( error )
-                    return connection.rollback( () => {
-                        return cb ( error );
+                let detailRows = [];
+                purchaseProduct.product_purchaseProduct
+                        .forEach( element => detailRows.push(values( element )));
+                    console.log(detailRows);
+                connection.query('INSERT INTO product_purchaseProduct (purchase_id, product_id, price, amount) VALUES ?', [detailRows], (error, result2) => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+    
+                        
+                        connection.commit( error => {
+                            if ( error )
+                                return connection.rollback( () => {
+                                    return cb ( error );
+                                });
+                            console.log('Success!');
+                            return cb( null, result2.insertId );
+                        });
                     });
+            // connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
+            //     if ( error )
+            //         return connection.rollback( () => {
+            //             return cb ( error );
+            //         });
 
-                });
-
-
-            let vals = [];
-            purchaseProduct.product_purchaseProduct
-                    .forEach( element => vals.push(values( element )));
-
-            connection.query('INSERT INTO product_purchaseProduct (purchase_id, product_id, price, amount) VALUES ?', [vals], (error, result2) => {
-                if ( error )
-                    return connection.rollback( () => {
-                        return cb ( error );
-                    });
-
-                    connection.commit( error => {
-                        if ( error )
-                            return connection.rollback( () => {
-                                return cb ( error );
-                            });
-                        console.log('Success!');
-                        return cb( null, result2.insertId );
-                    });
-                    
-                });
-
-            //Inserts multiple records.
-                
-                
-                // PurchaseProduct.getDetailQuery(purchaseProduct.product_purchaseProduct, connection);
-
-
-
+            //     });
 
         });
     } else 
