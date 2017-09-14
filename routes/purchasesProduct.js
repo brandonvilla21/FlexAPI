@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const PurchaseProduct = require('../models/purchaseProduct');
+var values = require('object.values');
+
 
 router
     .get('/', (req, res, next) => {
@@ -28,10 +30,14 @@ router
             purchase_date: req.body.purchase_date,
             subtotal: req.body.subtotal,
             discount: req.body.discount,
-            total: req.body.total,
-            product_purchaseProduct: req.body.product_purchaseProduct
+            total: req.body.total            
         }
-        PurchaseProduct.insert(purchaseProduct, (error, data) => {
+
+        let detailRows = [];
+
+        req.body.product_purchaseProduct.forEach( element => detailRows.push(values( element )));
+
+        PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
             return PurchaseProduct.response(res, error, data);
         })
     })

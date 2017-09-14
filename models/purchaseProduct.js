@@ -33,16 +33,21 @@ PurchaseProduct.findByParam = (column, param, cb) => {
     }
 }
 
-PurchaseProduct.insert = ( purchaseProduct, cb ) => {
+PurchaseProduct.insert = ( purchaseProduct, detailRows, cb ) => {
+    console.log('cb: ', cb);
+    console.log('detailRows: ', detailRows);
+    console.log("purchaseProduct", purchaseProduct);
     if ( connection ) {
         connection.beginTransaction( error => {
             if ( error )
                 return cb( error );
 
-                let detailRows = [];
-                purchaseProduct.product_purchaseProduct
-                        .forEach( element => detailRows.push(values( element )));
-                    console.log(detailRows);
+                connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+
                 connection.query('INSERT INTO product_purchaseProduct (purchase_id, product_id, price, amount) VALUES ?', [detailRows], (error, result2) => {
                     if ( error )
                         return connection.rollback( () => {
@@ -59,13 +64,9 @@ PurchaseProduct.insert = ( purchaseProduct, cb ) => {
                             return cb( null, result2.insertId );
                         });
                     });
-            // connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
-            //     if ( error )
-            //         return connection.rollback( () => {
-            //             return cb ( error );
-            //         });
+            
 
-            //     });
+                });
 
         });
     } else 
