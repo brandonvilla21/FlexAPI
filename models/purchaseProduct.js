@@ -16,13 +16,52 @@ PurchaseProduct.all = cb => {
 }
 
 PurchaseProduct.findById = ( id, cb ) => {
-    if ( connection ) {
-        connection.query('SELECT * FROM purchaseProduct WHERE purchase_id = ?', [id], (error, result) => {
-            if ( error ) 
-                return cb( error );
-            return cb( null, result );
-        });
-    }
+  if ( connection ) {
+    connection.beginTransaction( error => {
+        if ( error )
+            return cb( error );
+
+        async.parallel([
+            next => {
+              connection.query('SELECT * FROM purchaseProduct WHERE purchase_id = ?', [id], (error, result) => {
+                if (error)
+                  next(error);
+                else
+                  next(null, result[0]);
+                });
+            },
+
+            next => {
+              connection.query('SELECT * FROM product_purchaseProduct WHERE purchase_id = ?', [id], (error, result) => {
+                  if (error)
+                    next(error);
+                  else
+                    next(null, result);
+                  });
+              }
+          ],
+
+          (err, results) => {
+              if (err)
+                return connection.rollback( () => { 
+                  return cb(err) 
+                });
+              else 
+                connection.commit( error => {
+                  if (error) 
+                    return connection.rollback( () => { 
+                      return cb (error) 
+                    });
+                  else{
+                    results[0].product_purchaseProduct = results[1];
+                    return cb( null, results[0] );
+                  }
+                });
+          });
+
+    });
+} else 
+    return cb('Connection refused!');
 }
 
 PurchaseProduct.findByParam = (column, param, cb) => {
@@ -39,7 +78,6 @@ PurchaseProduct.insert = ( purchaseProduct, detailRows, cb ) => {
         connection.beginTransaction( error => {
             if ( error )
                 return cb( error );
-
 
             async.parallel([
                 next => {
