@@ -9,6 +9,7 @@ const customer = require('./routes/customers');
 const employee = require('./routes/employees');
 const provider = require('./routes/providers');
 const purchaseProduct = require('./routes/purchasesProduct');
+const saleProduct = require('./routes/salesProduct');
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use('/provider', provider);
 
 //Processes.
 app.use('/purchaseProduct', purchaseProduct);
+app.use('/saleProduct', saleProduct);
 
 
 app.listen(3000);

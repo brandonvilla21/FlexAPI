@@ -1,5 +1,5 @@
 USE flex_admin;
-
+SET default_storage_engine=INNODB;
 CREATE TABLE product (
     product_id INT NOT NULL AUTO_INCREMENT,
     description VARCHAR(100),
@@ -89,7 +89,7 @@ CREATE TABLE product_purchaseProduct (
     product_id INT NOT NULL,
     price FLOAT,
     amount INT,
-    PRIMARY KEY (purchase_id)
+    PRIMARY KEY (purchase_id, product_id)
 );
 
 CREATE TABLE devolution (
@@ -106,7 +106,7 @@ CREATE TABLE devolution_product (
     product_id INT NOT NULL,
     price FLOAT,
     amount INT,
-    PRIMARY KEY (devolution_id)
+    PRIMARY KEY (devolution_id, product_id)
 );
 
 
