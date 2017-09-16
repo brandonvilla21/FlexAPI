@@ -1,6 +1,7 @@
 const connection = require('../config/db-connection');
 const values = require('object.values');
 const async = require('async');
+const dynamicQueries = require('../services/dynamic.queries.service');
 
 let PurchaseProduct = {}
 
@@ -65,61 +66,11 @@ PurchaseProduct.findById = (id, cb) => {
 }
 
 PurchaseProduct.findByParam = (column, param, cb) => {
-  if (connection) {
-    connection.beginTransaction(error => {
-      if (error)
-        return cb(error);
-
-      async.waterfall([
-        next => {
-          connection.query(`SELECT * FROM purchaseProduct WHERE ?? LIKE ?`, [column, `${param}%`], (error, result) => {
-            if (error)
-              next(error);
-            else {
-              next(null, result);
-            }
-          });
-        },
-
-        (purchaseProducts, next) => {
-          async.each(purchaseProducts, (item, nextEach) => {
-            connection.query('SELECT * FROM product_purchaseProduct WHERE purchase_id = ?', [item.purchase_id], (error, resultAsync) => {
-              if (error)
-                next(error);
-              else {
-                item.product_purchaseProduct = resultAsync;
-                nextEach();
-              }
-            });
-          },
-            err => {
-              if (error)
-                next(err);
-              else
-                next(null, purchaseProducts);
-            })
-        }
-      ],
-
-        (err, purchaseProducts) => {
-          if (err)
-            return connection.rollback(() => {
-              return cb(err)
-            });
-          else
-            connection.commit(error => {
-              if (error)
-                return connection.rollback(() => {
-                  return cb(error)
-                });
-              else {
-                return cb(null, purchaseProducts);
-              }
-            });
-        });
-
-    });
-  }
+  dynamicQueries.findByParamsWithPivotTable({
+    mainTable: "purchaseProduct", //The main table
+    pivotTable: "product_purchaseProduct", //The secondary table which contains all the details that we want to get
+    mainTableId: "purchase_id" //The primary key from the main table, which is part of the pivotTable's composite primary key.
+  }, column, param, cb);
 }
 
 PurchaseProduct.insert = (purchaseProduct, detailRows, cb) => {
