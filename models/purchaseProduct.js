@@ -1,5 +1,6 @@
 const connection = require('../config/db-connection');
-var values = require('object.values');
+const values = require('object.values');
+const async = require('async');
 
 let PurchaseProduct = {}
 
@@ -34,54 +35,51 @@ PurchaseProduct.findByParam = (column, param, cb) => {
 }
 
 PurchaseProduct.insert = ( purchaseProduct, detailRows, cb ) => {
-    console.log('cb: ', cb);
-    console.log('detailRows: ', detailRows);
-    console.log("purchaseProduct", purchaseProduct);
     if ( connection ) {
         connection.beginTransaction( error => {
             if ( error )
                 return cb( error );
 
-                connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
-                if ( error )
-                    return connection.rollback( () => {
-                        return cb ( error );
-                    });
 
-                connection.query('INSERT INTO product_purchaseProduct (purchase_id, product_id, price, amount) VALUES ?', [detailRows], (error, result2) => {
-                    if ( error )
-                        return connection.rollback( () => {
-                            return cb ( error );
-                        });
-    
-                        
-                        connection.commit( error => {
-                            if ( error )
-                                return connection.rollback( () => {
-                                    return cb ( error );
-                                });
-                            console.log('Success!');
-                            return cb( null, result2.insertId );
-                        });
+            async.parallel([
+                next => {
+                  connection.query('INSERT INTO purchaseProduct SET ?', [purchaseProduct], (error, result) => {
+                    if (error)
+                      next(error);
+                    else
+                      next(null, result);
                     });
-            
+                },
 
-                });
+                next => {
+                  connection.query('INSERT INTO product_purchaseProduct (purchase_id, product_id, price, amount) VALUES ?', [detailRows], (error, result) => {
+                      if (error)
+                        next(error);
+                      else
+                        next(null, result);
+                      });
+                  }
+              ],
+
+              (err, results) => {
+                  if (err)
+                    return connection.rollback( () => { 
+                      return cb(err) 
+                    });
+                  else 
+                    connection.commit( error => {
+                      if (error) 
+                        return connection.rollback( () => { 
+                          return cb (error) 
+                        });
+                      else
+                        return cb( null, results );
+                    });
+              });
 
         });
     } else 
         return cb('Connection refused!');
-}
-
-PurchaseProduct.getDetailQuery = (arrayDetails, connection) => {
-    let sql = "";
-
-    return;
-    // for(var v in values)
-    //     sql += "('" + connection.escape(values[v]) + "'),";
-      
-    //   sql = sql.substr(0,sql.length-1);
-
 }
 
 // PurchaseProduct.update = (customer, cb) => {
