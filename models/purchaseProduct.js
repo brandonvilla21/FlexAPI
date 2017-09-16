@@ -16,7 +16,6 @@ PurchaseProduct.all = cb => {
     return cb('Connection refused!');
 }
 
-<<<<<<< HEAD
 PurchaseProduct.count = cb => {
     console.log('count method');
     if ( connection ) {
@@ -29,13 +28,7 @@ PurchaseProduct.count = cb => {
         return cb('Connection refused!');
 }
 
-PurchaseProduct.findById = ( id, cb ) => {
-    if ( connection ) {
-        connection.query('SELECT * FROM purchaseProduct WHERE purchase_id = ?', [id], (error, result) => {
-            if ( error ) 
-                return cb( error );
-            return cb( null, result );
-=======
+
 PurchaseProduct.findById = (id, cb) => {
   if (connection) {
     connection.beginTransaction(error => {
@@ -78,7 +71,6 @@ PurchaseProduct.findById = (id, cb) => {
                 return cb(null, results[0]);
               }
             });
->>>>>>> 04f9e22181a8e7d389ecec3e5e03d20af21679c9
         });
 
     });
