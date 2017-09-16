@@ -82,43 +82,6 @@ PurchaseProduct.insert = ( purchaseProduct, detailRows, cb ) => {
         return cb('Connection refused!');
 }
 
-// PurchaseProduct.update = (customer, cb) => {
-    
-//     if ( connection ) {
-//         connection.beginTransaction( error => {
-//             if ( error )
-//                 return cb( error );
-
-//             connection.query(
-//                 'UPDATE customer SET name = ?, lastname = ?, reference = ?, whatsapp = ?, facebook = ?, balance = ? WHERE customer_id = ?',
-//                 [customer.name, customer.lastname, customer.reference, customer.whatsapp, customer.facebook, customer.balance, customer.customer_id], (error, result) => {
-//                 if ( error )
-//                     return connection.rollback( () => {
-//                         return cb ( error );
-//                     });
-//                 connection.commit( error => {
-//                     if ( error )
-//                         return connection.rollback( () => {
-//                             return cb ( error );
-//                         });
-//                     console.log('Success!');
-//                     return cb( null, result.insertId );
-//                 });
-//             });
-//         });
-//     } else 
-//         return cb('Connection refused!');
-// }
-
-// PurchaseProduct.remove = ( id, cb ) => {
-//     if ( connection ) {
-//         connection.query('DELETE FROM customer WHERE customer_id = ?', [id], (error, result) => {
-//             if ( error )
-//                 return cb(error);
-//             return cb( null, result );
-//         });
-//     }
-// }
 
 PurchaseProduct.response = (res, error, data) => {
     if ( error )

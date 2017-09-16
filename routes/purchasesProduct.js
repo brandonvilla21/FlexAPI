@@ -35,22 +35,16 @@ router
         }
 
         let detailRows = [];
-
-        // const callback =        PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
-        //     return PurchaseProduct.response(res, error, data);
-        // })
-
-
-        async.each(req.body.product_purchaseProduct, (item, callback) => {
+        async.each(req.body.product_purchaseProduct, (item, cb) => {
             detailRows.push(values( item ));
-            callback();
+            cb();
         }, (err) => {
             if(err){
                 PurchaseProduct.response(err);
             } else {
                 PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
-                        return PurchaseProduct.response(res, error, data);
-                    })   
+                    return PurchaseProduct.response(res, error, data);
+                })   
             }
         })
 
