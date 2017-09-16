@@ -1,5 +1,5 @@
 USE flex_admin;
-
+SET default_storage_engine=INNODB;
 CREATE TABLE product (
     product_id INT NOT NULL AUTO_INCREMENT,
     description VARCHAR(100),
