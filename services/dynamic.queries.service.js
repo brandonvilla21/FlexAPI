@@ -3,7 +3,7 @@ const values = require('object.values');
 const async = require('async');
 
 const dynamicQuery = {
-  findByParamsWithPivotTable: (params, column, param, cb) => {
+  findByParamsWithPivotTable: (params, cb) => {
     if (connection) {
       connection.beginTransaction(error => {
         if (error)
@@ -11,7 +11,7 @@ const dynamicQuery = {
 
         async.waterfall([
           next => {
-            connection.query(`SELECT * FROM ?? WHERE ?? LIKE ?`, [params.mainTable, column, `${param}%`], (error, result) => {
+            connection.query(`SELECT * FROM ?? WHERE ?? LIKE ?`, [params.mainTable, params.column, `${params.param}%`], (error, result) => {
               if (error)
                 next(error);
               else {

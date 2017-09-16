@@ -67,10 +67,12 @@ SaleProduct.findById = (id, cb) => {
 
 SaleProduct.findByParam = (column, param, cb) => {
   dynamicQueries.findByParamsWithPivotTable({
+    column: column,
+    param: param,
     mainTable: "saleProduct", //The main table
     pivotTable: "product_saleProduct", //The secondary table which contains all the details that we want to get
     mainTableId: "sale_id" //The primary key from the main table, which is part of the pivotTable's composite primary key.
-  }, column, param, cb);
+  }, cb);
 }
 
 // SaleProduct.insert = (saleProduct, detailRows, cb) => {
