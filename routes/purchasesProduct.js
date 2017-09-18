@@ -12,8 +12,14 @@ router
         });
     })
 
-    .get('/:id', (req, res, next) => {
-        PurchaseProduct.findById(req.params.id, (error, data) => {
+    .get('/general', (req, res, next) => {
+        PurchaseProduct.general( (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        });
+    })
+
+    .get('/count', (req, res, next) => {
+        PurchaseProduct.count( (error, data) => {
             return PurchaseProduct.response(res, error, data);
         });
     })
@@ -22,7 +28,19 @@ router
         PurchaseProduct.findByParam( req.params.column, req.params.param, (error, data) => {
             return PurchaseProduct.response(res, error, data);
         });
-      })
+    })
+
+    .get('/join/:id', (req, res, next) => {
+        PurchaseProduct.findByIdJoin(req.params.id, (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        });
+    })
+    
+    .get('/:id', (req, res, next) => {
+        PurchaseProduct.findById(req.params.id, (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        });
+    })
 
     .post('/', (req, res, next) => {
         const purchaseProduct = {

@@ -49,7 +49,7 @@ Customer.insert = ( customer, cb ) => {
                             return cb ( error );
                         });
                     console.log('Success!');
-                    return cb( null, result.insertId );
+                    return cb( null, result );
                 });
             });
         });

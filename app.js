@@ -27,7 +27,6 @@ connection.connect( err => {
 
 app.use(bodyParser.json());
 
-//
 app.use('/product', products);
 app.use('/customer', customer);
 app.use('/employee', employee);
