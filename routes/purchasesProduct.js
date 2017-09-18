@@ -53,16 +53,16 @@ router
         }
 
         let detailRows = [];
-        let updateAmount = [];
+        let updateRows = [];
         async.each(req.body.product_purchaseProduct, (item, cb) => {
             detailRows.push(values( item ));
-            updateAmount.push({amount: item.amount, product_id: item.product_id});
+            updateRows.push({amount: item.amount, price: item.price, product_id: item.product_id});
             cb();
         }, (err) => {
             if(err){
                 PurchaseProduct.response(err);
             } else {
-                PurchaseProduct.insert(purchaseProduct, detailRows, updateAmount, (error, data) => {
+                PurchaseProduct.insert(purchaseProduct, detailRows, updateRows, (error, data) => {
                     return PurchaseProduct.response(res, error, data);
                 })   
             }

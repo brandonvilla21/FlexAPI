@@ -156,7 +156,7 @@ PurchaseProduct.findByParam = (column, param, cb) => {
   }, cb);
 }
 
-PurchaseProduct.insert = (purchaseProduct, detailRows, updateAmount, cb) => {
+PurchaseProduct.insert = (purchaseProduct, detailRows, updateRows, cb) => {
   if (connection) {
     connection.beginTransaction(error => {
       if (error)
@@ -182,9 +182,9 @@ PurchaseProduct.insert = (purchaseProduct, detailRows, updateAmount, cb) => {
         },
 
         next => {
-          async.each(updateAmount, (item, cbb) =>{
+          async.each(updateRows, (item, cbb) =>{
             console.log(item);
-            connection.query('UPDATE product SET existence = existence + ? WHERE product_id = ?', [item.amount, item.product_id], (error, result) => {
+            connection.query('UPDATE product SET existence = existence + ?, buy_price = ? WHERE product_id = ?', [item.amount, item.price, item.product_id], (error, result) => {
               cbb();
             });
           },
