@@ -35,14 +35,16 @@ router
         }
 
         let detailRows = [];
+        let updateAmount = [];
         async.each(req.body.product_purchaseProduct, (item, cb) => {
             detailRows.push(values( item ));
+            updateAmount.push({amount: item.amount, product_id: item.product_id});
             cb();
         }, (err) => {
             if(err){
                 PurchaseProduct.response(err);
             } else {
-                PurchaseProduct.insert(purchaseProduct, detailRows, (error, data) => {
+                PurchaseProduct.insert(purchaseProduct, detailRows, updateAmount, (error, data) => {
                     return PurchaseProduct.response(res, error, data);
                 })   
             }
