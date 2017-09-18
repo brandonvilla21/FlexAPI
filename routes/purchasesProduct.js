@@ -12,6 +12,12 @@ router
         });
     })
 
+    .get('/general', (req, res, next) => {
+        PurchaseProduct.general( (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        });
+    })
+
     .get('/count', (req, res, next) => {
         PurchaseProduct.count( (error, data) => {
             return PurchaseProduct.response(res, error, data);
@@ -24,6 +30,12 @@ router
         });
     })
 
+    .get('/join/:id', (req, res, next) => {
+        PurchaseProduct.findByIdJoin(req.params.id, (error, data) => {
+            return PurchaseProduct.response(res, error, data);
+        });
+    })
+    
     .get('/:id', (req, res, next) => {
         PurchaseProduct.findById(req.params.id, (error, data) => {
             return PurchaseProduct.response(res, error, data);

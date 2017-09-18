@@ -16,8 +16,18 @@ PurchaseProduct.all = cb => {
     return cb('Connection refused!');
 }
 
+PurchaseProduct.general = cb => {
+  if (connection) {
+    connection.query('SELECT PP.*, P.name AS provider_name FROM purchaseProduct AS PP INNER JOIN provider AS P ON PP.provider_id = P.provider_id', (error, result) => {
+      if (error)
+        return cb(error);
+      return cb(null, result);
+    })
+  } else
+    return cb('Connection refused!');
+}
+
 PurchaseProduct.count = cb => {
-    console.log('count method');
     if ( connection ) {
         connection.query('SELECT COUNT (purchase_id) AS number_of_purchase FROM purchaseProduct', (error, result) => {
             if (error)
@@ -28,6 +38,64 @@ PurchaseProduct.count = cb => {
         return cb('Connection refused!');
 }
 
+PurchaseProduct.findByIdJoin = (id, cb) => {
+  if (connection) {
+    connection.beginTransaction(error => {
+      if (error)
+        return cb(error);
+
+      async.parallel([
+        next => {
+          connection.query(
+            `SELECT PP.*, P.name AS provider_name, P.email AS provider_email, P.contact AS provider_email, P.phone AS provider_phone
+            FROM purchaseProduct AS PP
+            INNER JOIN provider AS P ON PP.provider_id = P.provider_id
+            WHERE purchase_id = ?`,
+            [id], (error, result) => {
+            if (error)
+              next(error);
+            else
+              next(null, result[0]);
+          });
+        },
+
+        next => {
+          connection.query(
+            `SELECT PPP.*, P.description
+            FROM product_purchaseProduct AS PPP
+            INNER JOIN product AS P ON PPP.product_id = P.product_id
+            WHERE purchase_id = ?`,
+          [id], (error, result) => {
+            if (error)
+              next(error);
+            else
+              next(null, result);
+          });
+        }
+      ],
+
+        (err, results) => {
+          if (err)
+            return connection.rollback(() => {
+              return cb(err)
+            });
+          else
+            connection.commit(error => {
+              if (error)
+                return connection.rollback(() => {
+                  return cb(error)
+                });
+              else {
+                results[0].product_purchaseProduct = results[1];
+                return cb(null, results[0]);
+              }
+            });
+        });
+
+    });
+  } else
+    return cb('Connection refused!');
+}
 
 PurchaseProduct.findById = (id, cb) => {
   if (connection) {
