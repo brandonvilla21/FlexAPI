@@ -94,7 +94,7 @@ CREATE TABLE product_purchaseProduct (
 
 CREATE TABLE devolution (
     devolution_id INT NOT NULL AUTO_INCREMENT,
-    purchase_id INT NOT NULL,
+    sale_id INT NOT NULL,
     employee_id INT NOT NULL,
     devolution_date DATE,
     total_returned FLOAT,
