@@ -16,6 +16,96 @@ SaleProduct.all = cb => {
     return cb('Connection refused!');
 }
 
+SaleProduct.general = cb => {
+  if (connection) {
+    connection.query(`
+    SELECT PP.*, P.name AS employee_name 
+    FROM saleProduct AS PP 
+    INNER JOIN employee AS P ON PP.employee_id = P.employee_id`, (error, result) => {
+      if (error)
+        return cb(error);
+      return cb(null, result);
+    })
+  } else
+    return cb('Connection refused!');
+}
+
+
+SaleProduct.count = cb => {
+  if ( connection ) {
+      connection.query('SELECT COUNT (sale_id) AS number_of_sale FROM saleProduct', (error, result) => {
+          if (error)
+              return cb(error);
+          return cb(null, result);
+      })
+  } else 
+      return cb('Connection refused!');
+}
+
+// SaleProduct.findByIdJoin = (id, cb) => {
+//   if (connection) {
+//     connection.beginTransaction(error => {
+//       if (error)
+//         return cb(error);
+
+//       async.parallel([
+//         next => {
+//           connection.query(
+//             `SELECT PP.*, E.name AS employee_name,
+//                           E.lastname AS employee_lastname, 
+//                           E.address AS employee_address, 
+//                           E.whatsapp AS employee_whatsapp
+
+//             FROM saleProduct AS PP
+//             INNER JOIN employee AS E ON E.employee_id = P.employee_id
+//             WHERE sale_id = ?`,
+//             [id], (error, result) => {
+//             if (error)
+//               next(error);
+//             else
+//               next(null, result[0]);
+//           });
+//         },
+
+//         next => {
+//           connection.query(
+//             `SELECT PPP.*, E.description
+//             FROM product_saleProduct AS PPP
+//             INNER JOIN product AS P ON PPP.product_id = E.product_id
+//             WHERE sale_id = ?`,
+//           [id], (error, result) => {
+//             if (error)
+//               next(error);
+//             else
+//               next(null, result);
+//           });
+//         }
+//       ],
+
+//         (err, results) => {
+//           if (err)
+//             return connection.rollback(() => {
+//               return cb(err)
+//             });
+//           else
+//             connection.commit(error => {
+//               if (error)
+//                 return connection.rollback(() => {
+//                   return cb(error)
+//                 });
+//               else {
+//                 results[0].product_saleProduct = results[1];
+//                 return cb(null, results[0]);
+//               }
+//             });
+//         });
+
+//     });
+//   } else
+//     return cb('Connection refused!');
+// }
+
+
 SaleProduct.findById = (id, cb) => {
   if (connection) {
     connection.beginTransaction(error => {
@@ -75,52 +165,70 @@ SaleProduct.findByParam = (column, param, cb) => {
   }, cb);
 }
 
-// SaleProduct.insert = (saleProduct, detailRows, cb) => {
-//   if (connection) {
-//     connection.beginTransaction(error => {
-//       if (error)
-//         return cb(error);
+SaleProduct.insert = (saleProduct, detailRows, updateRows, cb) => {
+  if (connection) {
+    connection.beginTransaction(error => {
+      if (error)
+        return cb(error);
 
-//       async.parallel([
-//         next => {
-//           connection.query('INSERT INTO saleProduct SET ?', [saleProduct], (error, result) => {
-//             if (error)
-//               next(error);
-//             else
-//               next(null, result);
-//           });
-//         },
+      async.parallel([
+        next => {
+          connection.query('INSERT INTO saleProduct SET ?', [saleProduct], (error, result) => {
+            if (error)
+              next(error);
+            else
+              next(null, result);
+          });
+        },
 
-//         next => {
-//           connection.query('INSERT INTO product_saleProduct (sale_id, product_id, price, amount) VALUES ?', [detailRows], (error, result) => {
-//             if (error)
-//               next(error);
-//             else
-//               next(null, result);
-//           });
-//         }
-//       ],
+        next => {
+          connection.query('INSERT INTO product_saleProduct (sale_id, product_id, price, amount) VALUES ?', [detailRows], (error, result) => {
+            if (error)
+              next(error);
+            else
+              next(null, result);
+          });
+        },
 
-//         (err, results) => {
-//           if (err)
-//             return connection.rollback(() => {
-//               return cb(err)
-//             });
-//           else
-//             connection.commit(error => {
-//               if (error)
-//                 return connection.rollback(() => {
-//                   return cb(error)
-//                 });
-//               else
-//                 return cb(null, results);
-//             });
-//         });
+        next => {
+          async.each(updateRows, (item, cbb) =>{
+            console.log(item);
+            connection.query('UPDATE product SET existence = existence - ? WHERE product_id = ?', [item.amount, item.product_id], (error, result) => {
+              cbb();
+            });
+          },
 
-//     });
-//   } else
-//     return cb('Connection refused!');
-// }
+            err => {
+              if (err)
+                next(err);
+              else
+                next(null, "success");
+            }
+
+          )
+        }
+      ],
+
+        (err, results) => {
+          if (err)
+            return connection.rollback(() => {
+              return cb(err)
+            });
+          else
+            connection.commit(error => {
+              if (error)
+                return connection.rollback(() => {
+                  return cb(error)
+                });
+              else
+                return cb(null, results);
+            });
+        });
+
+    });
+  } else
+    return cb('Connection refused!');
+}
 
 
 SaleProduct.response = (res, error, data) => {
