@@ -42,7 +42,7 @@ Product.insert = (product, cb) => {
                     return conn.rollback( () => {
                         return cb(error);
                     });
-                conn.query('INSERT INTO productlel SET ?', [product], (error, result) => {
+                conn.query('INSERT INTO product SET ?', [product], (error, result) => {
                     if(error) 
                         return conn.rollback( () => {
                             return cb(error);
