@@ -97,15 +97,8 @@ CREATE TABLE devolution (
     employee_id INT NOT NULL,
     devolution_date DATE,
     total_returned FLOAT,
+    concept VARCHAR(100),
     PRIMARY KEY (devolution_id)
-);
-
-CREATE TABLE devolution_product (
-    devolution_id INT NOT NULL,
-    product_id INT NOT NULL,
-    price FLOAT,
-    amount INT,
-    PRIMARY KEY (devolution_id, product_id)
 );
 
 
