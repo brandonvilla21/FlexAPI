@@ -50,6 +50,7 @@ CREATE TABLE saleProduct (
     customer_id INT NOT NULL,    
     employee_id INT NOT NULL,
     sale_date DATE,
+    type VARCHAR(30),
     subtotal FLOAT,
     discount FLOAT,
     total FLOAT,
