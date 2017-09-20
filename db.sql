@@ -49,7 +49,7 @@ CREATE TABLE saleProduct (
     sale_id INT NOT NULL AUTO_INCREMENT,
     customer_id INT NOT NULL,    
     employee_id INT NOT NULL,
-    saleDate DATE,
+    sale_date DATE,
     subtotal FLOAT,
     discount FLOAT,
     total FLOAT,
@@ -60,7 +60,6 @@ CREATE TABLE saleProduct (
 CREATE TABLE product_saleProduct (
     sale_id INT NOT NULL,
     product_id INT NOT NULL,    
-    employee_id INT NOT NULL,
     price FLOAT,
     amount INT,
     PRIMARY KEY (sale_id, product_id)
