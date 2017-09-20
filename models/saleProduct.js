@@ -19,9 +19,14 @@ SaleProduct.all = cb => {
 SaleProduct.general = cb => {
   if (connection) {
     connection.query(`
-    SELECT PP.*, P.name AS employee_name 
-    FROM saleProduct AS PP 
-    INNER JOIN employee AS P ON PP.employee_id = P.employee_id`, (error, result) => {
+    SELECT 
+           SP.*, 
+           CONCAT(E.name, ' ', E.lastname) AS employee_fullname,
+           CONCAT(C.name, ' ', C.lastname) AS customer_fullname
+
+    FROM saleProduct AS SP 
+    INNER JOIN employee AS E ON SP.employee_id = E.employee_id 
+    INNER JOIN customer AS C ON SP.customer_id = C.customer_id `, (error, result) => {
       if (error)
         return cb(error);
       return cb(null, result);
