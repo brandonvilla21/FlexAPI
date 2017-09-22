@@ -48,6 +48,8 @@ router
           customer_id: req.body.customer_id,
           employee_id: req.body.employee_id,
           sale_date: req.body.sale_date,
+          state: req.body.state,
+          type: req.body.type,
           subtotal: req.body.subtotal,
           discount: req.body.discount,
           total: req.body.total,

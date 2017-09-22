@@ -41,7 +41,32 @@ Devolution.count = cb => {
       } else
         return cb('Connection refused!');
 }
-
+// Not finished yet
+Devolution.findById = (id, cb) => {
+  if ( !connection ) 
+    return cb('Connection refused!');
+  connection.beginTransaction( error => {
+    if (error)
+      return cb(error);
+    
+      async.parallel([
+        next => {
+          connection.query('SELECT * FROM devolution WHERE devolution_id = ?', [id], (error, result) => {
+            if ( error )
+              return next(error);
+            else 
+              return next(null, result);
+          })
+        }
+      ],
+      ( error, results ) => {
+        if (error)
+          return cb( error );
+        return cb(null, results);
+        
+      });
+  });
+}
 Devolution.findByIdJoin = (id, cb) => {
     if (connection) {
       connection.beginTransaction(error => {
@@ -51,12 +76,15 @@ Devolution.findByIdJoin = (id, cb) => {
         async.parallel([
           next => {
             connection.query(
-              `SELECT D.*, DP.*, P.description, SP.*, PSP.*
+              `SELECT D.devolution_id, D.sale_id, D.devolution_date, D.total_returned, D.concept,
+                      SP.*, 
+                      ED.employee_id AS devolution_employee_id, ED.name AS devolution_employee_name,
+                      ES.employee_id AS sale_employee_id, ES.name AS sale_employee_name
               FROM devolution AS D
-              INNER JOIN devolution_product AS DP ON DP.devolution_id = D.devolution_id
-              INNER JOIN product AS P ON P.product_id = DP.product_id
               INNER JOIN saleProduct AS SP ON SP.sale_id = D.sale_id
-              INNER JOIN product_saleProduct AS PSP ON PSP.sale_id = SP.sale_id`,
+              INNER JOIN employee AS ED ON ED.employee_id = D.employee_id
+              INNER JOIN employee AS ES ON ES.employee_id = SP.employee_id
+              WHERE devolution_id = ?`,
               [id], (error, result) => {
               if (error)
                 next(error);
@@ -65,19 +93,19 @@ Devolution.findByIdJoin = (id, cb) => {
             });
           },
   
-        //   next => {
-        //     connection.query(
-        //       `SELECT PPP.*, P.description
-        //       FROM product_purchaseProduct AS PPP
-        //       INNER JOIN product AS P ON PPP.product_id = P.product_id
-        //       WHERE purchase_id = ?`,
-        //     [id], (error, result) => {
-        //       if (error)
-        //         next(error);
-        //       else
-        //         next(null, result);
-        //     });
-        //   }
+          next => {
+            connection.query(
+              `SELECT PSP.*, P.description
+              FROM product_saleProduct AS PSP
+              INNER JOIN product AS P ON PSP.product_id = P.product_id
+              WHERE sale_id = ?`,
+            [id], (error, result) => {
+              if (error)
+                next(error);
+              else
+                next(null, result);
+            });
+          }
         ],
   
           (err, results) => {
@@ -92,7 +120,7 @@ Devolution.findByIdJoin = (id, cb) => {
                     return cb(error)
                   });
                 else {
-                //   results[0].product_saleProduct = results[1];
+                  results[0].product_saleProduct = results[1];
                   return cb(null, results[0]);
                 }
               });
@@ -102,6 +130,36 @@ Devolution.findByIdJoin = (id, cb) => {
     } else
       return cb('Connection refused!');
 }
+
+Devolution.insert = (devolution, cb) => {
+  if(connection) {
+      connection.beginTransaction( err => {
+          if (err) return cb( err );
+          connection.query('INSERT INTO devolution SET ?', [devolution], (error, result) => {
+            if(error) 
+                return connection.rollback( () => {
+                    return cb(error);
+                });
+            connection.query(`UPDATE saleProduct SET state='CANCELED' WHERE sale_id = ?`, [devolution.sale_id], (error, result) =>{
+              if ( error )
+                return connection.rollback( () => {
+                  return cb( error );
+                })
+                connection.commit( err => {
+                    if (error)
+                        return connection.rollback( () => {
+                            return cb(error);
+                        });
+                    console.log("Success!");
+                    return cb(null, result);
+                });
+            });
+          });
+      });
+  } else
+      return cb('Connection refused');
+}
+
 Devolution.response = (res, error, data) => {
     if (error)
       res.status(500).json(error);

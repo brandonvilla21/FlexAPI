@@ -26,6 +26,27 @@ router
         Devolution.count( ( error, data ) =>{
             return Devolution.response( res, error, data );
         })
+    })
+
+    .get('/:id', (req, res, next) =>{
+        Devolution.findById( ( error, data ) =>{
+            return Devolution.response( res, error, data );
+        })
+    })
+
+    .post('/', (req, res, next) => {
+        const devolution = {
+            devolution_id: null,
+            sale_id: req.body.sale_id,
+            employee_id: req.body.employee_id,
+            devolution_date: req.body.devolution_date,
+            total_returned: req.body.total_returned,
+            concept: req.body.concept            
+        }
+
+        Devolution.insert(devolution, (error, data) => {
+            return Devolution.response(res, error, data);
+        });
     });
 
 
