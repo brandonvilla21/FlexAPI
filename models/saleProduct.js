@@ -201,6 +201,19 @@ SaleProduct.insert = (saleProduct, detailRows, updateRows, cb) => {
         },
 
         next => {
+          if (saleProduct.type == 'CRÉDITO') {
+            connection.query('UPDATE customer SET balance = balance + ? WHERE customer_id = ?', [saleProduct.total, saleProduct.customer_id], (error, result) => {
+              if (error)
+                next(error);
+              else
+                next(null, result);
+            });
+          } else {
+            next(null);
+          }
+        },
+
+        next => {
           async.each(updateRows, (item, cbb) =>{
             console.log(item);
             connection.query('UPDATE product SET existence = existence - ? WHERE product_id = ?', [item.amount, item.product_id], (error, result) => {
@@ -212,7 +225,7 @@ SaleProduct.insert = (saleProduct, detailRows, updateRows, cb) => {
               if (err)
                 next(err);
               else
-                next(null, "success");
+                next(null, "result");
             }
 
           )
