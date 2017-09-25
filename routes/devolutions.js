@@ -29,7 +29,7 @@ router
     })
 
     .get('/:id', (req, res, next) =>{
-        Devolution.findById( ( error, data ) =>{
+        Devolution.findById(req.params.id, ( error, data ) => {
             return Devolution.response( res, error, data );
         })
     })

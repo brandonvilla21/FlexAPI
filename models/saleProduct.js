@@ -47,68 +47,73 @@ SaleProduct.count = cb => {
       return cb('Connection refused!');
 }
 
-// SaleProduct.findByIdJoin = (id, cb) => {
-//   if (connection) {
-//     connection.beginTransaction(error => {
-//       if (error)
-//         return cb(error);
+SaleProduct.findByIdJoin = (id, cb) => {
+  if (connection) {
+    connection.beginTransaction(error => {
+      if (error)
+        return cb(error);
 
-//       async.parallel([
-//         next => {
-//           connection.query(
-//             `SELECT PP.*, E.name AS employee_name,
-//                           E.lastname AS employee_lastname, 
-//                           E.address AS employee_address, 
-//                           E.whatsapp AS employee_whatsapp
+      async.parallel([
+        next => {
+          connection.query(
+            `SELECT SP.*, E.name AS employee_name, E.lastname AS employee_lastname, 
+                    E.address AS employee_address, E.whatsapp AS employee_whatsapp,
+                    
+                    C.name AS customer_name, C.lastname AS customer_lastname,
+                    C.reference AS customer_reference, C.whatsapp AS customer_whatsapp,
+                    C.facebook AS customer_facebook, C.balance AS customer_balance
+            
+             FROM saleProduct AS SP
 
-//             FROM saleProduct AS PP
-//             INNER JOIN employee AS E ON E.employee_id = P.employee_id
-//             WHERE sale_id = ?`,
-//             [id], (error, result) => {
-//             if (error)
-//               next(error);
-//             else
-//               next(null, result[0]);
-//           });
-//         },
+             INNER JOIN employee AS E ON E.employee_id = SP.employee_id
+             INNER JOIN customer AS C ON C.customer_id = SP.customer_id
+             WHERE sale_id = ?
+            `,
+            [id], (error, result) => {
+            if (error)
+              next(error);
+            else
+              next(null, result[0]);
+          });
+        },
 
-//         next => {
-//           connection.query(
-//             `SELECT PPP.*, E.description
-//             FROM product_saleProduct AS PPP
-//             INNER JOIN product AS P ON PPP.product_id = E.product_id
-//             WHERE sale_id = ?`,
-//           [id], (error, result) => {
-//             if (error)
-//               next(error);
-//             else
-//               next(null, result);
-//           });
-//         }
-//       ],
+        next => {
+          connection.query(
+            `SELECT PSP.*, P.description
+            FROM product_saleProduct AS PSP
+            INNER JOIN product AS P ON PSP.product_id = P.product_id
+            WHERE sale_id = ?`,
+          [id], (error, result) => {
+            if (error)
+              next(error);
+            else
+              next(null, result);
+          });
+        }
+      ],
 
-//         (err, results) => {
-//           if (err)
-//             return connection.rollback(() => {
-//               return cb(err)
-//             });
-//           else
-//             connection.commit(error => {
-//               if (error)
-//                 return connection.rollback(() => {
-//                   return cb(error)
-//                 });
-//               else {
-//                 results[0].product_saleProduct = results[1];
-//                 return cb(null, results[0]);
-//               }
-//             });
-//         });
+        (err, results) => {
+          if (err)
+            return connection.rollback(() => {
+              return cb(err)
+            });
+          else
+            connection.commit(error => {
+              if (error)
+                return connection.rollback(() => {
+                  return cb(error)
+                });
+              else {
+                results[0].product_saleProduct = results[1];
+                return cb(null, results[0]);
+              }
+            });
+        });
 
-//     });
-//   } else
-//     return cb('Connection refused!');
-// }
+    });
+  } else
+    return cb('Connection refused!');
+}
 
 
 SaleProduct.findById = (id, cb) => {

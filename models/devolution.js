@@ -19,7 +19,7 @@ Devolution.all = cb => {
 Devolution.general = cb => {
     if (connection) {
         connection.query(`
-        SELECT D.*, E.name
+        SELECT D.*, E.name AS employee_name
         FROM devolution AS D
         INNER JOIN employee AS E ON E.employee_id = D.employee_id`,
         (error, result) => {
@@ -48,25 +48,16 @@ Devolution.findById = (id, cb) => {
   connection.beginTransaction( error => {
     if (error)
       return cb(error);
-    
-      async.parallel([
-        next => {
-          connection.query('SELECT * FROM devolution WHERE devolution_id = ?', [id], (error, result) => {
-            if ( error )
-              return next(error);
-            else 
-              return next(null, result);
-          })
-        }
-      ],
-      ( error, results ) => {
-        if (error)
-          return cb( error );
-        return cb(null, results);
-        
-      });
+    connection.query('SELECT * FROM devolution WHERE devolution_id = ?', [id], (error, result) =>{
+      if ( error )
+        return cb(error);
+      return cb( null, result );
+    })
   });
+
 }
+
+// Not finished yet
 Devolution.findByIdJoin = (id, cb) => {
     if (connection) {
       connection.beginTransaction(error => {
@@ -140,7 +131,7 @@ Devolution.insert = (devolution, cb) => {
                 return connection.rollback( () => {
                     return cb(error);
                 });
-            connection.query(`UPDATE saleProduct SET state='CANCELED' WHERE sale_id = ?`, [devolution.sale_id], (error, result) =>{
+            connection.query(`UPDATE saleProduct SET state='CANCELADO' WHERE sale_id = ?`, [devolution.sale_id], (error, result) =>{
               if ( error )
                 return connection.rollback( () => {
                   return cb( error );

@@ -42,11 +42,6 @@ Product.insert = (product, cb) => {
                     return conn.rollback( () => {
                         return cb(error);
                     });
-                conn.query('INSERT INTO product SET ?', [product], (error, result) => {
-                    if(error) 
-                        return conn.rollback( () => {
-                            return cb(error);
-                        });
                     conn.commit( err => {
                         if (error)
                             return conn.rollback( () => {
@@ -55,8 +50,6 @@ Product.insert = (product, cb) => {
                         console.log("Success!");
                         return cb(null, result);
                     });
-                }); 
-
             });
         });
     } else
