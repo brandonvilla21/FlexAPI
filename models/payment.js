@@ -114,13 +114,27 @@ Payment.insert = (payment, cb) => {
       connection.beginTransaction( err => {
           if (err) return cb( err );
 
-          async.parallel([
+          async.waterfall([
+            next => {
+              connection.query('SELECT total_payment, total FROM saleProduct WHERE sale_id = ?', [payment.sale_id], (error, result) => {
+                if (error)
+                  next(error);
+                else {
+                  console.log("result.total_payment + payment.payment_amount", result.total_payment + payment.payment_amount);
+                  if (result[0].total >= (result[0].total_payment + payment.payment_amount)) 
+                    next(null);
+                  else
+                    next("total_payment cannot be greater than total on saleProduct");
+                }
+              });
+            },
+            
             next => {
               connection.query('INSERT INTO payment SET ?', [payment], (error, result) => {
                 if (error)
                   next(error);
                 else {
-                  next(null, result);
+                  next(null);
                 }
               });
             },
@@ -130,7 +144,7 @@ Payment.insert = (payment, cb) => {
                 if (error)
                   next(error);
                 else {
-                  next(null, result);
+                  next(null, "success");
                 }
               });
             }
