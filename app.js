@@ -8,9 +8,11 @@ const products = require('./routes/products');
 const customer = require('./routes/customers');
 const employee = require('./routes/employees');
 const provider = require('./routes/providers');
+
 const purchaseProduct = require('./routes/purchasesProduct');
 const saleProduct = require('./routes/salesProduct');
 const devolution = require('./routes/devolutions');
+const payment = require('./routes/payments');
 
 const app = express();
 
@@ -37,6 +39,7 @@ app.use('/provider', provider);
 app.use('/purchaseProduct', purchaseProduct);
 app.use('/saleProduct', saleProduct);
 app.use('/devolution', devolution);
+app.use('/payment', payment);
 
 app.listen(3000);
 
