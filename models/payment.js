@@ -120,7 +120,6 @@ Payment.insert = (payment, cb) => {
                 if (error)
                   next(error);
                 else {
-                  console.log("result.total_payment + payment.payment_amount", result.total_payment + payment.payment_amount);
                   if (result[0].total >= (result[0].total_payment + payment.payment_amount)) 
                     next(null);
                   else

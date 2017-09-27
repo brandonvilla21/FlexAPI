@@ -40,7 +40,7 @@ router
             sale_id: req.body.sale_id,
             employee_id: req.body.employee_id,
             payment_amount: req.body.payment_amount,
-            payment_date: req.body.payment_date
+            payment_date: require('moment')(req.body.payment_date).format('YYYY-MM-DD')
         }
 
         Payment.insert(payment, (error, data) => {
