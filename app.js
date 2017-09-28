@@ -2,6 +2,7 @@ const express = require('express');
 const connection = require('./config/db-connection');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const morgan = require('morgan');
 
 //Route importation.
 const products = require('./routes/products');
@@ -17,6 +18,7 @@ const app = express();
 //CORS
 app.use(cors());
 
+app.use(morgan('dev'));
 
 connection.connect( err => {
     if (err) {
