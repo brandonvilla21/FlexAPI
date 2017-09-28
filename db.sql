@@ -70,6 +70,7 @@ CREATE TABLE product_saleProduct (
 CREATE TABLE payment (
     payment_id INT NOT NULL AUTO_INCREMENT,
     sale_id INT NOT NULL,
+    employee_id INT NOT NULL,
     payment_amount FLOAT,
     payment_date DATE,
     PRIMARY KEY (payment_id)

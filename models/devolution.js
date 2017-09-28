@@ -124,28 +124,97 @@ Devolution.findByIdJoin = (id, cb) => {
 
 Devolution.insert = (devolution, cb) => {
   if(connection) {
+
       connection.beginTransaction( err => {
           if (err) return cb( err );
-          connection.query('INSERT INTO devolution SET ?', [devolution], (error, result) => {
-            if(error) 
-                return connection.rollback( () => {
-                    return cb(error);
+
+
+          async.waterfall([
+            next => {
+              connection.query('INSERT INTO devolution SET ?', [devolution], (error, result) => {
+                if (error)
+                  next(error);
+                else {
+                  next(null);
+                }
+              });
+            },
+  
+            next => {
+              connection.query(`UPDATE saleProduct SET state='CANCELADO' WHERE sale_id = ?`, [devolution.sale_id], (error, result) => {
+                if (error)
+                  next(error);
+                else {
+                  next(null);
+                }
+              });
+            },
+
+            next => {
+              connection.query(`SELECT * FROM product_saleproduct WHERE sale_id = ?`, [devolution.sale_id], (error, result) => {
+                if (error)
+                  next(error);
+                else {
+                  next(null, result);
+                }
+              });
+            },
+
+            (items, next) => {
+              async.each(items, (item, cbb) => {
+                connection.query('UPDATE product SET existence = existence + ? WHERE product_id = ?', [item.amount, item.product_id], (error, result) => {
+                  cbb();
                 });
-            connection.query(`UPDATE saleProduct SET state='CANCELADO' WHERE sale_id = ?`, [devolution.sale_id], (error, result) =>{
-              if ( error )
-                return connection.rollback( () => {
-                  return cb( error );
-                })
-                connection.commit( err => {
-                    if (error)
-                        return connection.rollback( () => {
-                            return cb(error);
-                        });
-                    console.log("Success!");
-                    return cb(null, result);
+              },
+    
+                err => {
+                  if (err)
+                    next(err);
+                  else
+                    next(null, "success");
+                }
+    
+              )
+            }
+          ],
+            (err, items) => {
+              if (err)
+                return connection.rollback(() => {
+                  return cb(err)
+                });
+              else
+                connection.commit(error => {
+                  if (error)
+                    return connection.rollback(() => {
+                      return cb(error)
+                    });
+                  else {
+                    return cb(null, items);
+                  }
                 });
             });
-          });
+
+
+          // connection.query('INSERT INTO devolution SET ?', [devolution], (error, result) => {
+          //   if(error) 
+          //       return connection.rollback( () => {
+          //           return cb(error);
+          //       });
+          //   connection.query(`UPDATE saleProduct SET state='CANCELADO' WHERE sale_id = ?`, [devolution.sale_id], (error, result) =>{
+          //     if ( error )
+          //       return connection.rollback( () => {
+          //         return cb( error );
+          //       })
+          //       connection.commit( err => {
+          //           if (error)
+          //               return connection.rollback( () => {
+          //                   return cb(error);
+          //               });
+          //           console.log("Success!");
+          //           return cb(null, result);
+          //       });
+          //   });
+          // });
       });
   } else
       return cb('Connection refused');
