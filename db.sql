@@ -104,4 +104,12 @@ CREATE TABLE devolution (
     PRIMARY KEY (devolution_id)
 );
 
+CREATE TABLE user (
+    user_id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    email VARCHAR(80) NOT NULL UNIQUE,
+    password BINARY(60) NOT NULL,
 
+    PRIMARY KEY(user_id)
+
+);

@@ -120,7 +120,11 @@ Payment.insert = (payment, cb) => {
                 if (error)
                   next(error);
                 else {
-                  if (result[0].total >= (result[0].total_payment + payment.payment_amount)) 
+                  console.log(result[0].total)
+                  
+                  console.log(parseFloat(result[0].total_payment) + parseFloat(payment.payment_amount))
+                 
+                  if (parseFloat(result[0].total) >= (parseFloat(result[0].total_payment) + parseFloat(payment.payment_amount))) 
                     next(null);
                   else
                     next("total_payment cannot be greater than total on saleProduct");
@@ -173,6 +177,7 @@ Payment.insert = (payment, cb) => {
             (err, items) => {
               if (err)
                 return connection.rollback(() => {
+                  console.log(err);
                   return cb(err)
                 });
               else

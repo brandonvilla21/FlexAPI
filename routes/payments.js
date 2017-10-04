@@ -42,7 +42,7 @@ router
             payment_amount: req.body.payment_amount,
             payment_date: require('moment')(req.body.payment_date).format('YYYY-MM-DD')
         }
-
+        console.log('routes: ', payment );        
         Payment.insert(payment, (error, data) => {
             return Payment.response(res, error, data);
         });
