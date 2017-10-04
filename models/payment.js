@@ -139,6 +139,28 @@ Payment.insert = (payment, cb) => {
             },
   
             next => {
+              connection.query('SELECT customer_id FROM saleProduct WHERE sale_id = ?', [payment.sale_id], (error, result) => {
+
+                console.log("customer_id", result);
+
+                if (error)
+                  next(error);
+                else
+                  next(null, result[0].customer_id);
+              });
+            },
+            
+            (customer_id, next) => {
+              console.log("customer_id en sig cb", customer_id);
+              connection.query('UPDATE customer SET balance = balance - ? WHERE customer_id = ?', [payment.payment_amount,customer_id], (error, result) => {
+                if (error)
+                  next(error);
+                else
+                  next(null);
+              });
+            },
+
+            next => {
               connection.query(`UPDATE saleProduct SET total_payment = total_payment + ? WHERE sale_id = ?`, [payment.payment_amount ,payment.sale_id], (error, result) => {
                 if (error)
                   next(error);
