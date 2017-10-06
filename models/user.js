@@ -24,7 +24,10 @@ User.register = ( user, cb ) => {
                                 return connection.rollback( () => cb( error ))
                         });
                         console.log('Success!');
-                        return cb( null, results );
+                        return cb( null, {
+                            success: true,
+                            message: 'Register completed'
+                        });
                 })
             })
             .catch( error => {
@@ -80,7 +83,7 @@ User.login = ( email, password, cb ) => {
 
 
 User.response = (res, error, data) => {
-    if (error) 
+    if (error)
         res.status(500).json(error);
     else
         res.status(200).json(data);
