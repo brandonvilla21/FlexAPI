@@ -18,7 +18,8 @@ router
     .post('/login', (req, res, next) => {
         const email = req.body.email;
         const password = req.body.password;
-
+        console.log(email)
+        console.log(password)
         User.login( email, password, ( error, data ) => {
             return User.response( res, error, data );
         });

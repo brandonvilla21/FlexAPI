@@ -16,15 +16,27 @@ User.register = ( user, cb ) => {
                 user.password = hash;
                 // Insert into table
                 connection.query('INSERT INTO user SET ?', [user], ( error, results, fileds ) => {
-                    if ( error )
-                        return connection.rollback( () => cb ( error ));
+                    if ( error ) {
+                        if (error.code === 'ER_DUP_ENTRY') {
+                            return connection.rollback( () => cb ( null, { 
+                                success: false,
+                                message: 'Este email ya esta en uso'
+                            }));
+
+                        } else
+                            return connection.rollback( () => cb ( error ));
+                    }
                         
-                        connection.commit( error => {
-                            if ( error )
-                                return connection.rollback( () => cb( error ))
-                        });
-                        console.log('Success!');
-                        return cb( null, results );
+                    connection.commit( error => {
+                        if ( error )
+                            return connection.rollback( () => cb( error ))
+                    });
+                    console.log('Success!');
+                    return cb( null, { 
+                        success: true,
+                        message: 'Registro exitoso!',
+                        result: results
+                    });
                 })
             })
             .catch( error => {
@@ -54,22 +66,22 @@ User.login = ( email, password, cb ) => {
                             expiresIn: 4000
                         });
                         return cb( null, { 
-                            sucess: true,
-                            message: 'Successfully logged',
+                            success: true,
+                            message: 'Has iniciado sessión correctamente',
                             token: token 
                         });
 
                     } else 
-                        return cb ( {
+                        return cb (null, {
                             success: false,
-                            message: 'Incorrect password'
+                            message: 'Password incorrecto'
                         } );
                     
                 });
             } else {
-                return cb( {
+                return cb(null, {
                     success: false,
-                    message: 'Email and password does not match'
+                    message: 'El email y password no coinciden'
                 })
             }
 
