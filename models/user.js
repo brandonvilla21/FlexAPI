@@ -92,7 +92,7 @@ User.login = ( email, password, cb ) => {
 
 
 User.response = (res, error, data) => {
-    if (error) 
+    if (error)
         res.status(500).json(error);
     else
         res.status(200).json(data);
