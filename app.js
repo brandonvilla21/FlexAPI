@@ -3,6 +3,8 @@ const connection = require('./config/db-connection');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const morgan = require('morgan');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
 //Route importation.
 const products = require('./routes/products');
@@ -14,6 +16,7 @@ const purchaseProduct = require('./routes/purchasesProduct');
 const saleProduct = require('./routes/salesProduct');
 const devolution = require('./routes/devolutions');
 const payment = require('./routes/payments');
+const user = require('./routes/users');
 
 const app = express();
 
@@ -21,6 +24,7 @@ const app = express();
 app.use(cors());
 
 app.use(morgan('dev'));
+
 
 connection.connect( err => {
     if (err) {
@@ -32,10 +36,13 @@ connection.connect( err => {
 
 app.use(bodyParser.json());
 
+
+
 app.use('/product', products);
 app.use('/customer', customer);
 app.use('/employee', employee);
 app.use('/provider', provider);
+app.use('/user', user);
 
 //Processes.
 app.use('/purchaseProduct', purchaseProduct);
