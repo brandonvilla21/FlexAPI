@@ -18,6 +18,9 @@ const devolution = require('./routes/devolutions');
 const payment = require('./routes/payments');
 const user = require('./routes/users');
 
+const reports = require('./routes/reports');
+
+
 const app = express();
 
 //CORS
@@ -28,6 +31,7 @@ app.use(morgan('dev'));
 app.use(bodyParser.json());
 
 
+//Warehouses
 app.use('/product', products);
 app.use('/customer', customer);
 app.use('/employee', employee);
@@ -39,6 +43,9 @@ app.use('/purchaseProduct', purchaseProduct);
 app.use('/saleProduct', saleProduct);
 app.use('/devolution', devolution);
 app.use('/payment', payment);
+
+//Reports
+app.use('/reports', reports)
 
 app.listen(3000);
 
