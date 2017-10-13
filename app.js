@@ -25,17 +25,7 @@ app.use(cors());
 
 app.use(morgan('dev'));
 
-
-connection.connect( err => {
-    if (err) {
-        console.log('Error trying to connect with Data Base: ' + err.stack);
-        return;
-    }
-    console.log('Connected as id ' + connection.threadId);
-});
-
 app.use(bodyParser.json());
-
 
 
 app.use('/product', products);
