@@ -16,7 +16,7 @@ conn.connect( err => {
         console.log('Error trying to connect with Data Base: ' + err.stack);
         return;
     }
-    console.log('Connected as id ' + connection.threadId);
+    console.log('Connected as id ' + conn.threadId);
 });
 
 module.exports =  conn;
