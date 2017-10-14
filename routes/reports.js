@@ -8,6 +8,11 @@ router
             return Report.response(res, error, data);
         });
     })
+    .get('/getProducts', (req, res, next) => {
+      Report.getProducts( (error, data) => {
+          return Report.response(res, error, data);
+      });
+    })
     .get('/salesToPay', (req, res, next) => {
         Report.getSalesToPay( (error, data) => {
             return Report.response(res, error, data);

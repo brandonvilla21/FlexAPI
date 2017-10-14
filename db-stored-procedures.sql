@@ -7,7 +7,7 @@ BEGIN
   SELECT * FROM customer;
 END
 
--- 1.- Get the list of sales that has not been paid.
+-- 2.- Get the list of sales that has not been paid.
 DELIMITER $$
 
 CREATE PROCEDURE `salesToPay`()
@@ -19,4 +19,12 @@ BEGIN
   INNER JOIN customer AS c ON c.customer_id = sp.customer_id
   INNER JOIN employee as e ON e.employee_id = sp.employee_id
   WHERE sp.total_payment < sp.total;
+END
+
+-- 3.- Get list of products.
+DELIMITER $$
+
+CREATE PROCEDURE `getProducts`()
+BEGIN
+  SELECT * FROM product;
 END

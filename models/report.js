@@ -15,6 +15,22 @@ Report.getCustomers = cb => {
       } else
         return cb('Connection refused!');
 }
+
+Report.getProducts = cb => {
+  if (connection) {
+      connection.beginTransaction( error => {
+        if (error) return cb(error);
+
+        connection.query('CALL getProducts()', (error, result) => {
+          if (error) return cb(error);
+          return cb(null, result[0]);
+        })
+
+      })
+    } else
+      return cb('Connection refused!');
+}
+
 Report.getSalesToPay = cb => {
     if (connection) {
         connection.beginTransaction( error => {
