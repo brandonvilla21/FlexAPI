@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Report = require('../models/report');
-
+const moment = require('moment');
 router
     .get('/getCustomers', (req, res, next) => {
         Report.getCustomers( (error, data) => {
@@ -18,5 +18,14 @@ router
             return Report.response(res, error, data);
         });
     })
+    .post('/salesHistoryByColumnInAPeriod', (req, res, next) => {
+      Report.salesHistoryByColumnInAPeriod( 
+        moment(req.body.fromDate).format('YYYY-MM-DD'),
+        moment(req.body.toDate).format('YYYY-MM-DD'),
+        req.body.column,
+        req.body.id, (error, data) => {
+          return Report.response(res, error, data);
+      });
+  })
     
 module.exports = router;
