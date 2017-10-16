@@ -72,3 +72,63 @@ BEGIN
 	DEALLOCATE PREPARE stmt;
 
 END
+
+
+
+
+
+-- <<< Get the list of products having the minimum or less than minimum existence.>>>
+
+DELIMITER $$
+CREATE PROCEDURE `getProductsWMinExistence`()
+BEGIN
+	SELECT * FROM product WHERE existence <= min;
+END
+
+
+
+
+
+-- <<< Get the list of a table set by parameter.>>>
+
+DELIMITER $$
+
+CREATE PROCEDURE `getTableData`(
+  IN tbl_name VARCHAR(50) )
+
+BEGIN
+	SET @query = CONCAT('SELECT * FROM ', tbl_name);
+
+	PREPARE stmt FROM @query;
+	
+	EXECUTE stmt;
+	DEALLOCATE PREPARE stmt;
+END
+
+
+
+
+-- <<< Get the list of payments by sale_id.>>>
+
+DELIMITER $$
+
+CREATE PROCEDURE `getPaymentsBySaleId`(
+	IN saleId INT
+)
+
+BEGIN
+	SET @sale_id = saleId;
+	SET @query = CONCAT('
+	SELECT 
+		p.`payment_id`, p.`sale_id`, p.`employee_id` , e.`name` AS employee_name, p.`payment_amount`,
+		p.`payment_date`
+
+	FROM payment AS p
+	INNER JOIN employee AS e ON e.`employee_id` = p.`employee_id`
+	INNER JOIN saleProduct AS sp ON sp.`sale_id` = p.`sale_id`
+	WHERE sp.`sale_id` = ?');
+	
+	PREPARE stmt FROM @query;
+	EXECUTE stmt USING @sale_id;
+	DEALLOCATE PREPARE stmt;
+END

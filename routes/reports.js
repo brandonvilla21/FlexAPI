@@ -18,14 +18,19 @@ router
             return Report.response(res, error, data);
         });
     })
+    .get('/getProductsWMinExistence', (req, res, next) => {
+        Report.getProductsWMinExistence( (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })
     .post('/salesHistoryByColumnInAPeriod', (req, res, next) => {
-      Report.salesHistoryByColumnInAPeriod( 
-        moment(req.body.fromDate).format('YYYY-MM-DD'),
-        moment(req.body.toDate).format('YYYY-MM-DD'),
-        req.body.column,
-        req.body.id, (error, data) => {
-          return Report.response(res, error, data);
-      });
-  })
+        Report.salesHistoryByColumnInAPeriod( 
+            moment(req.body.fromDate).format('YYYY-MM-DD'),
+            moment(req.body.toDate).format('YYYY-MM-DD'),
+            req.body.column,
+            req.body.id, (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })
     
 module.exports = router;
