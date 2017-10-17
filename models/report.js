@@ -61,6 +61,22 @@ Report.getProductsWMinExistence = cb => {
         return cb('Connection refused!');
 }
 
+Report.getTableData =  (tableName, cb) => {
+  if ( connection )
+      connection.query('CALL getTableData(?)', 
+      [tableName], (error, result) => error ? cb(error) : cb(null, result[0]) );
+  else 
+    return cb('Connection refused');
+}
+
+Report.getPaymentsBySaleId = (saleId, cb) => {
+  if ( connection ) 
+    connection.query('CALL getPaymentsBySaleId(?)', 
+    [saleId], (error, result) => error ? cb(error) : cb(null, result[0]) );
+  else 
+    return cb('Connection refused');
+}
+
 //This endpoint can serves at least to reports.
 Report.salesHistoryByColumnInAPeriod = (fromDate, toDate, column, id, cb) => {
   if (connection) {

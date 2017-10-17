@@ -23,6 +23,18 @@ router
             return Report.response(res, error, data);
         });
     })
+    .get('/getTableData/:table', (req, res, next) => {
+        const tableName = req.params.table;
+        Report.getTableData( tableName, (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })  
+    .get('/getPaymentsBySaleId/:saleId', (req, res, next) => {
+        const saleId = req.params.saleId;
+        Report.getPaymentsBySaleId( saleId, (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })  
     .post('/salesHistoryByColumnInAPeriod', (req, res, next) => {
         Report.salesHistoryByColumnInAPeriod( 
             moment(req.body.fromDate).format('YYYY-MM-DD'),
