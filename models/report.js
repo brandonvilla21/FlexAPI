@@ -47,13 +47,13 @@ Report.getSalesToPay = cb => {
 }
 
 //This endpoint can serves at least to reports.
-Report.salesHistoryByColumnInAPeriod = (fromDate, toDate, column, id, cb) => {
+Report.salesHistoryByColumnAndSaleTypeInAPeriod = (fromDate, toDate, column, id, saleType, cb) => {
   if (connection) {
       connection.beginTransaction( error => {
         if (error) return cb(error);
 
-        connection.query('CALL salesHistoryByColumnInAPeriod(?, ?, ?, ?)', 
-                          [fromDate, toDate, column, id], (error, result) => {
+        connection.query('CALL salesHistoryByColumnAndSaleTypeInAPeriod(?, ?, ?, ?, ?)', 
+                          [fromDate, toDate, column, id, saleType], (error, result) => {
           if (error) return cb(error);
           return cb(null, result[0]);
         })

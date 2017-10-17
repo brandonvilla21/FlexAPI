@@ -41,34 +41,68 @@ END
 
 
 
--- <<<4.- Sales history to/by an {model} in a period. Model could be Employee or Customer.>>>
+-- <<<4.- Sales history to/by a {model} and by a saleType in a period. Model could be Employee or Customer.>>>
 DELIMITER $$
 -- fromDate: The initial date for WHERE statement.
 -- toDate: The final date for WHERE statement.
--- column_id: Could be customer_id or employee_id.
+-- column_id: Could be `customer_id` or `employee_id` or `all`.
 -- id: The id that will be compared on WHERE statement.
-CREATE PROCEDURE `salesHistoryByColumnInAPeriod`(
-  IN fromDate DATE, 
-  IN toDate DATE, 
-  IN column_id VARCHAR(50), 
-  IN id INT)
-
+-- saleType: Could be `CONTADO` or `CRÉDITO.
+DROP PROCEDURE IF EXISTS salesHistoryByColumnAndSaleTypeInAPeriod$$
+CREATE PROCEDURE `salesHistoryByColumnAndSaleTypeInAPeriod`(
+	  IN fromDate DATE, 
+	  IN toDate DATE, 
+	  IN column_id VARCHAR(20), 
+	  IN id INT,
+	  IN saleType VARCHAR(50)  
+  )
+  
+  
 BEGIN
+	DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT s.sale_id, s.sale_date, s.type, s.state, s.subtotal, s.discount, s.total, s.total_payment,
+		   c.name AS customer_name, c.lastname AS customer_lastname,  
+           e.name AS employee_name, e.lastname AS employee_lastname
+		   FROM saleproduct s 
+           INNER JOIN customer c ON c.customer_id = s.customer_id 
+           INNER JOIN employee e ON e.employee_id = s.employee_id 
+           WHERE (s.sale_date BETWEEN ? AND ? )';
 
+  CASE saleType
+	WHEN 'CRÉDITO' THEN
+		SET initialQuery = CONCAT(initialQuery, ' AND s.type = ''CRÉDITO'''); 
+
+	WHEN 'CONTADO' THEN
+		SET initialQuery = CONCAT(initialQuery, ' AND s.type = ''CONTADO''');
+        
+	ELSE
+		SET initialQuery = initialQuery;
+        
+  END CASE;
+  
 	SET @from_date = fromDate;
 	SET @to_date = toDate;
 	SET @id = id;
-	SET @dynamic_query = CONCAT('
-	SELECT s.sale_id, s.sale_date, s.type, s.state, s.subtotal, s.discount, s.total, s.total_payment,
-		   c.name AS customer_name, c.lastname AS customer_lastname, 
-       e.name AS employee_name, e.lastname AS employee_lastname
-	FROM saleproduct s
-	INNER JOIN customer c ON c.customer_id = s.customer_id
-	INNER JOIN employee e ON e.employee_id = s.employee_id
-	WHERE (s.sale_date BETWEEN ? AND ? ) AND s.', column_id, ' = ?');
 
-	PREPARE stmt FROM @dynamic_query;
-	EXECUTE stmt USING @from_date, @to_date, @id;
-	DEALLOCATE PREPARE stmt;
+  IF (column_id = 'customer_id' OR column_id = 'employee_id') THEN
+		SET initialQuery = CONCAT(initialQuery, ' AND s.', column_id, ' = ? ');
+        SET @dynamic_query = initialQuery;
+        PREPARE stmt FROM @dynamic_query;
+		EXECUTE stmt USING @from_date, @to_date, @id;
+		DEALLOCATE PREPARE stmt;
+	
+    ELSE
+		SET @dynamic_query = initialQuery;
+		PREPARE stmt FROM @dynamic_query;
+		EXECUTE stmt USING @from_date, @to_date;
+		DEALLOCATE PREPARE stmt;
+        
+  END IF;
 
-END
+
+END$$
+
+
+
+
+
+

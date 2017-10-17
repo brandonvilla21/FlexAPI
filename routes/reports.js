@@ -18,12 +18,13 @@ router
             return Report.response(res, error, data);
         });
     })
-    .post('/salesHistoryByColumnInAPeriod', (req, res, next) => {
-      Report.salesHistoryByColumnInAPeriod( 
+    .post('/salesHistoryByColumnAndSaleTypeInAPeriod', (req, res, next) => {
+      Report.salesHistoryByColumnAndSaleTypeInAPeriod( 
         moment(req.body.fromDate).format('YYYY-MM-DD'),
         moment(req.body.toDate).format('YYYY-MM-DD'),
         req.body.column,
-        req.body.id, (error, data) => {
+        req.body.id,
+        req.body.saleType, (error, data) => {
           return Report.response(res, error, data);
       });
   })
