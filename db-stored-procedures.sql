@@ -62,7 +62,7 @@ BEGIN
 	DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT s.sale_id, s.sale_date, s.type, s.state, s.subtotal, s.discount, s.total, s.total_payment,
 		   c.name AS customer_name, c.lastname AS customer_lastname,  
            e.name AS employee_name, e.lastname AS employee_lastname
-		   FROM saleproduct s 
+		   FROM saleProduct s 
            INNER JOIN customer c ON c.customer_id = s.customer_id 
            INNER JOIN employee e ON e.employee_id = s.employee_id 
            WHERE (s.sale_date BETWEEN ? AND ? )';
