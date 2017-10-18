@@ -183,7 +183,7 @@ CREATE PROCEDURE `purchaseHistoryByColumnInAPeriod`(
   
 BEGIN
 	DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT pp.purchase_id, pp.purchase_date, pp.subtotal, 
-					   pp.discount, pp.total, p.name, p.description
+					   pp.discount, pp.total, p.name AS provider_name, p.description provider_description
 					   FROM purchaseProduct pp
 					   INNER JOIN provider p ON p.provider_id = pp.provider_id
 					   WHERE (pp.purchase_date BETWEEN ? AND ? )';
