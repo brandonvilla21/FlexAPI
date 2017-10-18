@@ -69,6 +69,14 @@ Report.getTableData =  (tableName, cb) => {
     return cb('Connection refused');
 }
 
+Report.accountStatus = (debt, fromDate, cb) => {
+  if ( connection )
+      connection.query('CALL accountStatus(?, ?)', 
+      [debt, fromDate], (error, result) => error ? cb(error) : cb(null, result[0]) );
+  else 
+    return cb('Connection refused');
+}
+
 Report.getPaymentsBySaleId = (saleId, cb) => {
   if ( connection ) 
     connection.query('CALL getPaymentsBySaleId(?)', 

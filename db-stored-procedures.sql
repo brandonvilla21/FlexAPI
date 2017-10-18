@@ -165,15 +165,16 @@ END
 
 
 
+
 -- <<< Get the bill from a customer, can be sales in debt, settled sales or both.>>>
 DELIMITER $$
 DROP PROCEDURE IF EXISTS accountStatus$$
 CREATE PROCEDURE `accountStatus`(
-	IN debt VARCHAR(50)
+	IN debt VARCHAR(50),
+	IN from_date VARCHAR(50)
 )
-
 BEGIN
-		DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT sp.sale_id AS Sale_sale_id, sp.sale_date, sp.total, p.payment_id, p.payment_date, p.payment_amount FROM saleProduct AS sp INNER JOIN payment AS p ON p.sale_id = sp.sale_id WHERE sp.type = ''CRÉDITO'' ';
+		DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT sp.sale_id AS Sale_sale_id, sp.sale_date, sp.total, p.payment_id, p.payment_date, p.payment_amount FROM saleProduct AS sp INNER JOIN payment AS p ON p.sale_id = sp.sale_id WHERE sp.type = ''CRÉDITO'' AND sp.sale_date >= ?';
  		CASE debt
 			WHEN 'DEBT' THEN
 				SET initialQuery = CONCAT(initialQuery, ' AND sp.total_payment < sp.total '); 
@@ -192,9 +193,10 @@ BEGIN
 		SET initialQuery = CONCAT(initialQuery, ' ORDER BY Sale_sale_id');
 
 		SET @dynamic_query = initialQuery;
-		CALL debug_msg(1, @dynamic_query);
+		SET @fromDate = from_date;
+		
 		PREPARE stmt FROM @dynamic_query;
-		EXECUTE stmt;
+		EXECUTE stmt USING @fromDate;
 		DEALLOCATE PREPARE stmt;
 END$$
 
