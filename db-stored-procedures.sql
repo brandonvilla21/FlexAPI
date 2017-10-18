@@ -17,7 +17,7 @@ DELIMITER $$
 CREATE PROCEDURE `salesToPay`()
 BEGIN
   SELECT 
-    sp.sale_id, sp.customer_id, c.name AS customer_name, sp.employee_id, 
+    sp.sale_id, sp.customer_id, sp.sale_date, c.name AS customer_name, c.reference AS customer_reference, c.whatsapp AS customer_whatsapp, sp.employee_id, 
     e.name AS employee_name, sp.subtotal, sp.discount, sp.total, sp.total_payment
   FROM saleProduct AS sp
   INNER JOIN customer AS c ON c.customer_id = sp.customer_id
@@ -62,7 +62,7 @@ BEGIN
 	DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT s.sale_id, s.sale_date, s.type, s.state, s.subtotal, s.discount, s.total, s.total_payment,
 		   c.name AS customer_name, c.lastname AS customer_lastname,  
            e.name AS employee_name, e.lastname AS employee_lastname
-		   FROM saleProduct s 
+		   FROM saleProduct s
            INNER JOIN customer c ON c.customer_id = s.customer_id 
            INNER JOIN employee e ON e.employee_id = s.employee_id 
            WHERE (s.sale_date BETWEEN ? AND ? )';
@@ -160,9 +160,53 @@ BEGIN
 	EXECUTE stmt USING @sale_id;
 	DEALLOCATE PREPARE stmt;
 END
-  
 
 
 
 
 
+-- <<< Get the bill from a customer, can be sales in debt, settled sales or both.>>>
+DELIMITER $$
+DROP PROCEDURE IF EXISTS accountStatus$$
+CREATE PROCEDURE `accountStatus`(
+	IN debt VARCHAR(50)
+)
+
+BEGIN
+		DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT sp.sale_id AS Sale_sale_id, sp.sale_date, sp.total, p.payment_id, p.payment_date, p.payment_amount FROM saleProduct AS sp INNER JOIN payment AS p ON p.sale_id = sp.sale_id WHERE sp.type = ''CRÉDITO'' ';
+ 		CASE debt
+			WHEN 'DEBT' THEN
+				SET initialQuery = CONCAT(initialQuery, ' AND sp.total_payment < sp.total '); 
+
+			WHEN 'SETTLED' THEN
+				SET initialQuery = CONCAT(initialQuery, ' AND sp.total_payment = sp.total ');
+			
+			WHEN 'ALL' THEN
+				SET initialQuery = initialQuery;
+				
+			ELSE
+				SET initialQuery = initialQuery; 
+				
+		END CASE;
+
+		SET initialQuery = CONCAT(initialQuery, ' ORDER BY Sale_sale_id');
+
+		SET @dynamic_query = initialQuery;
+		CALL debug_msg(1, @dynamic_query);
+		PREPARE stmt FROM @dynamic_query;
+		EXECUTE stmt;
+		DEALLOCATE PREPARE stmt;
+END$$
+
+
+
+
+
+-- <<< Debug query.>>>
+DELIMITER $$
+CREATE PROCEDURE debug_msg(enabled INTEGER, msg VARCHAR(1000))
+BEGIN
+  IF enabled THEN BEGIN
+    select concat('*', msg) AS '* DEBUG:';
+  END; END IF;
+END $$
