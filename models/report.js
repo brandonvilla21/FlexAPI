@@ -77,7 +77,6 @@ Report.getPaymentsBySaleId = (saleId, cb) => {
     return cb('Connection refused');
 }
 
-//This endpoint can serves at least to reports.
 Report.salesHistoryByColumnAndSaleTypeInAPeriod = (fromDate, toDate, column, id, saleType, cb) => {
   if (connection) {
       connection.beginTransaction( error => {
@@ -93,6 +92,23 @@ Report.salesHistoryByColumnAndSaleTypeInAPeriod = (fromDate, toDate, column, id,
     } else
       return cb('Connection refused!');
 }
+
+Report.purchaseHistoryByColumnInAPeriod = (fromDate, toDate, column, id, cb) => {
+  if (connection) {
+      connection.beginTransaction( error => {
+        if (error) return cb(error);
+
+        connection.query('CALL purchaseHistoryByColumnInAPeriod(?, ?, ?, ?)', 
+                          [fromDate, toDate, column, id], (error, result) => {
+          if (error) return cb(error);
+          return cb(null, result[0]);
+        })
+
+      })
+    } else
+      return cb('Connection refused!');
+}
+
 
 Report.response = (res, error, data) => {
     if (error)
