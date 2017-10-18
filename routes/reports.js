@@ -35,10 +35,11 @@ router
             return Report.response(res, error, data);
         });
     })  
-    .get('/accountStatus/:debt/:fromDate', (req, res, next) => {
+    .get('/accountStatus/:debt/:fromDate/:userId', (req, res, next) => {
         const debt = req.params.debt;
         const fromDate = req.params.fromDate;
-        Report.accountStatus( debt, fromDate, (error, data) => {
+        const userId = req.params.userId;
+        Report.accountStatus( debt, fromDate, userId, (error, data) => {
             return Report.response(res, error, data);
         });
     })  

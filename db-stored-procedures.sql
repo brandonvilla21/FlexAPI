@@ -171,10 +171,11 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS accountStatus$$
 CREATE PROCEDURE `accountStatus`(
 	IN debt VARCHAR(50),
-	IN from_date VARCHAR(50)
+	IN from_date VARCHAR(50),
+	IN customer_id VARCHAR(50)
 )
 BEGIN
-		DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT sp.sale_id AS Sale_sale_id, sp.sale_date, sp.total, p.payment_id, p.payment_date, p.payment_amount FROM saleProduct AS sp INNER JOIN payment AS p ON p.sale_id = sp.sale_id WHERE sp.type = ''CRÉDITO'' AND sp.sale_date >= ?';
+		DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT sp.sale_id AS Sale_sale_id, sp.customer_id, c.name, sp.sale_date, sp.total, p.payment_id, p.payment_date, p.payment_amount FROM saleProduct AS sp INNER JOIN payment AS p ON p.sale_id = sp.sale_id INNER JOIN customer AS c ON c.customer_id = sp.customer_id WHERE sp.type = ''CRÉDITO'' AND sp.sale_date >= ? AND sp.customer_id = ?';
  		CASE debt
 			WHEN 'DEBT' THEN
 				SET initialQuery = CONCAT(initialQuery, ' AND sp.total_payment < sp.total '); 
@@ -194,9 +195,10 @@ BEGIN
 
 		SET @dynamic_query = initialQuery;
 		SET @fromDate = from_date;
+		SET @customerId = customer_id;
 		
 		PREPARE stmt FROM @dynamic_query;
-		EXECUTE stmt USING @fromDate;
+		EXECUTE stmt USING @fromDate, @customerId;
 		DEALLOCATE PREPARE stmt;
 END$$
 
