@@ -60,6 +60,14 @@ Payment.findById = (id, cb) => {
 
 }
 
+Payment.findByParam = (column, param, cb) => {
+  if (connection) {
+      connection.query(`SELECT * FROM payment WHERE ?? LIKE ?`, [column, `${param}%`], (error, row) => {
+          if (error) return cb(error);
+          return cb(null, row);
+      })
+  }
+}
 
 Payment.findByIdJoin = (id, cb) => {
     if (connection) {

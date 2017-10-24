@@ -34,6 +34,12 @@ router
         })
     })
 
+    .get('/byColumn/:column/:param', (req, res, next) => {
+        Payment.findByParam( req.params.column, req.params.param, (error, data) => {
+            return Payment.response(res, error, data);
+        });
+    })
+
     .post('/', (req, res, next) => {
         const payment = {
             payment_id: null,
