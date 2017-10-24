@@ -163,7 +163,51 @@ END
 
 
 
+-- <<<5.- Purchase history by a {model} in a period. Model could be Provider, otherwise it will return all the records.>>>
+DELIMITER $$
+-- fromDate: The initial date for WHERE statement.
+-- toDate: The final date for WHERE statement.
+-- column_id: Could be `provider_id. If column_id is not provided,
+-- 			  the procedure will return all the records that matches against the dates.
+-- id: The id that will be compared on WHERE statement.
 
+DROP PROCEDURE IF EXISTS purchaseHistoryByColumnInAPeriod$$
+CREATE PROCEDURE `purchaseHistoryByColumnInAPeriod`(
+	  IN fromDate DATE, 
+	  IN toDate DATE, 
+	  IN column_id VARCHAR(20), 
+	  IN id INT  
+  )
+  
+  
+BEGIN
+	DECLARE initialQuery VARCHAR(500) DEFAULT 'SELECT pp.purchase_id, pp.purchase_date, pp.subtotal, 
+					   pp.discount, pp.total, p.name AS provider_name, p.description provider_description
+					   FROM purchaseProduct pp
+					   INNER JOIN provider p ON p.provider_id = pp.provider_id
+					   WHERE (pp.purchase_date BETWEEN ? AND ? )';
+
+	SET @from_date = fromDate;
+	SET @to_date = toDate;
+	SET @id = id;
+	
+	IF (column_id = 'provider_id') THEN
+		SET initialQuery = CONCAT(initialQuery, ' AND pp.', column_id, ' = ? ');
+        SET @dynamic_query = initialQuery;
+        PREPARE stmt FROM @dynamic_query;
+		EXECUTE stmt USING @from_date, @to_date, @id;
+		DEALLOCATE PREPARE stmt;
+	
+  ELSE
+		SET @dynamic_query = initialQuery;
+		PREPARE stmt FROM @dynamic_query;
+		EXECUTE stmt USING @from_date, @to_date;
+		DEALLOCATE PREPARE stmt;
+        
+  END IF;
+
+
+END$$
 
 
 -- <<< Get the bill from a customer, can be sales in debt, settled sales or both.>>>

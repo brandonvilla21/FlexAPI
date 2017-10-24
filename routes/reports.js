@@ -62,5 +62,14 @@ router
           return Report.response(res, error, data);
       });
   })
-    
+  .post('/purchaseHistoryByColumnInAPeriod', (req, res, next) => {
+    Report.purchaseHistoryByColumnInAPeriod(
+      moment(req.body.fromDate).format('YYYY-MM-DD'),
+      moment(req.body.toDate).format('YYYY-MM-DD'),
+      req.body.column,
+      req.body.id, (error, data) => {
+        return Report.response(res, error, data);
+      });
+  })
+
 module.exports = router;
