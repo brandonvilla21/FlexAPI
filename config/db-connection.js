@@ -18,6 +18,10 @@ conn.connect( err => {
         console.log('Error trying to connect with Data Base: ' + err.stack);
         return;
     }
+    console.log('HOST: ', process.env.DB_HOST);
+    console.log('USER: ', process.env.DB_USER);
+    console.log('PORT: ', process.env.DB_PORT);
+    console.log('DB: ', process.env.DB_NAME);
     console.log('Connected as id ' + conn.threadId);
 });
 
