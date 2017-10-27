@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
 
 //Route importation.
 const products = require('./routes/products');
@@ -30,6 +31,8 @@ app.use(morgan('dev'));
 
 app.use(bodyParser.json());
 
+// Point static path to dist
+app.use(express.static(path.join(__dirname, 'client')));
 
 //Warehouses
 app.use('/product', products);
