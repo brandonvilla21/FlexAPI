@@ -13,46 +13,36 @@ const async = require('async');
 const mkdirp = require('mkdirp');
 
 router
-  .get('/backup', (req, res, next) => {
+  .post('/backup', (req, res, next) => {
 
     const directory = './temp/';
 
     mkdirp(directory, (err) => {
-      if (err) return console.error("mkdirp", err);
+      if (err) return res.status(500).json({message: "Error handling directories on the backend."});
+      
+
+      let db = {
+        // host: req.body.host,
+        username: req.body.username,
+        password: req.body.password,
+        // database: req.body.name
+      }
 
       mysqlDump({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASS,
+        host: process.env.HOST,
         database: process.env.DB_NAME,
+        user: db.username,
+        password: db.password,
         ifNotExist: true, // Create table if not exist 
         dest: `${directory}${process.env.DB_NAME}_backup.sql` // destination file 
       },  (err) => {
-        if (err) return console.error("mysqlDump", err);
-
-        console.log("File created gg");
-        res.download(`${directory}${process.env.DB_NAME}_backup.sql`);
-        console.log("File sent gg");
-
+        if (err)
+          return res.status(500).json({message: "Wrong credentials."});
+        else
+          return res.download(`${directory}${process.env.DB_NAME}_backup.sql`);
 
       })
-
-
     });
-
-
-    // mysqlDump({
-    //   host: process.env.DB_HOST,
-    //   user: process.env.DB_USER,
-    //   password: process.env.DB_PASS,
-    //   database: process.env.DB_NAME,
-    //   ifNotExist: true, // Create table if not exist 
-    //   dest: `${directory}${process.env.DB_NAME}_backup.sql` // destination file 
-    // }, function (err) {
-    //   if (err) return false;
-
-    //   console.log("File created gg");
-    // })
 
   })
 
