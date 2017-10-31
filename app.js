@@ -21,6 +21,9 @@ const user = require('./routes/users');
 
 const reports = require('./routes/reports');
 
+const utilities = require('./routes/mysql.utilities');
+
+
 
 const app = express();
 
@@ -49,6 +52,10 @@ app.use('/payment', payment);
 
 //Reports
 app.use('/reports', reports)
+
+//Mysql utilities
+app.use('/utilities', utilities)
+
 
 app.listen(process.env.PORT || 5000);
 
