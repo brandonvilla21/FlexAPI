@@ -8,25 +8,52 @@
 const express = require('express');
 const router = express.Router();
 const mysqlDump = require('mysqldump');
+const fs = require('fs');
+const async = require('async');
+const mkdirp = require('mkdirp');
 
 router
-    .get('/backup', (req, res, next) => {
+  .get('/backup', (req, res, next) => {
+
+    const directory = './temp/';
+
+    mkdirp(directory, (err) => {
+      if (err) return console.error("mkdirp", err);
 
       mysqlDump({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
-        ifNotExist:true, // Create table if not exist 
-        dest:`./${process.env.DB_NAME}_backup.sql` // destination file 
-     },function(err){
-        if (err) return false;
-        
-        console.log("File created gg");
-     })
-        
-    })
+        ifNotExist: true, // Create table if not exist 
+        dest: `${directory}${process.env.DB_NAME}_backup.sql` // destination file 
+      },  (err) => {
+        if (err) return console.error("mysqlDump", err);
 
-    
+        console.log("File created gg");
+        res.download(`${directory}${process.env.DB_NAME}_backup.sql`);
+        console.log("File sent gg");
+
+
+      })
+
+
+    });
+
+
+    // mysqlDump({
+    //   host: process.env.DB_HOST,
+    //   user: process.env.DB_USER,
+    //   password: process.env.DB_PASS,
+    //   database: process.env.DB_NAME,
+    //   ifNotExist: true, // Create table if not exist 
+    //   dest: `${directory}${process.env.DB_NAME}_backup.sql` // destination file 
+    // }, function (err) {
+    //   if (err) return false;
+
+    //   console.log("File created gg");
+    // })
+
+  })
 
 module.exports = router;
