@@ -10,7 +10,7 @@ const router = express.Router();
 const mysqlDump = require('mysqldump');
 
 router
-    .get('/create', (req, res, next) => {
+    .get('/backup', (req, res, next) => {
 
       mysqlDump({
         host: process.env.DB_HOST,
@@ -26,5 +26,7 @@ router
      })
         
     })
+
+    
 
 module.exports = router;
