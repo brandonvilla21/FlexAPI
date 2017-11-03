@@ -28,7 +28,7 @@ const utilities = require('./routes/mysql.utilities');
 const app = express();
 
 //CORS
-app.use(cors());
+app.use(cors({ origin:true, credentials: true }));
 
 app.use(morgan('dev'));
 
