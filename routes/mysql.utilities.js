@@ -11,11 +11,10 @@ const fs = require('fs');
 const async = require('async');
 const mkdirp = require('mkdirp');
 const MysqlUtilities = require('../services/mysql.files.utilities');
+const directory = './temp/';
 
 router
   .post('/backup', (req, res, next) => {
-
-    const directory = './temp/';
 
     mkdirp(directory, (err) => {
       if (err) return res.status(500).json({message: "Error handling directories on the backend."});
@@ -27,5 +26,20 @@ router
     });
 
   })
+
+  .post('/restore', (req, res, next) => {
+        console.log("Entró");
+        mkdirp(directory, (err) => {
+          if (err) return res.status(500).json({message: "Error handling directories on the backend."});
+          
+          const db = { username: 'req.body.username', password: 'req.body.password' }
+          const options = { directory, db }
+    
+          return MysqlUtilities.restore(req, res, options);
+        });
+    
+      })
+
+
 
 module.exports = router;
