@@ -7,10 +7,10 @@
 //Apoko no karnal.
 const express = require('express');
 const router = express.Router();
-const mysqlDump = require('mysqldump');
 const fs = require('fs');
 const async = require('async');
 const mkdirp = require('mkdirp');
+const MysqlUtilities = require('../services/mysql.files.utilities');
 
 router
   .post('/backup', (req, res, next) => {
@@ -20,28 +20,10 @@ router
     mkdirp(directory, (err) => {
       if (err) return res.status(500).json({message: "Error handling directories on the backend."});
       
+      const db = { username: req.body.username, password: req.body.password }
+      const options = { directory, db }
 
-      let db = {
-        // host: req.body.host,
-        username: req.body.username,
-        password: req.body.password,
-        // database: req.body.name
-      }
-
-      mysqlDump({
-        host: process.env.HOST,
-        database: process.env.DB_NAME,
-        user: db.username,
-        password: db.password,
-        ifNotExist: true, // Create table if not exist 
-        dest: `${directory}${process.env.DB_NAME}_backup.sql` // destination file 
-      },  (err) => {
-        if (err)
-          return res.status(500).json({message: "Wrong credentials."});
-        else
-          return res.download(`${directory}${process.env.DB_NAME}_backup.sql`);
-
-      })
+      return MysqlUtilities.backup(res, options);
     });
 
   })
