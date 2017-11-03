@@ -28,11 +28,12 @@ router
   })
 
   .post('/restore', (req, res, next) => {
-        console.log("Entró");
+        console.log("req.getUser", req.get('username'));
+        console.log("req.getPass", req.get('pass'));
         mkdirp(directory, (err) => {
           if (err) return res.status(500).json({message: "Error handling directories on the backend."});
           
-          const db = { username: 'req.body.username', password: 'req.body.password' }
+          const db = { username: req.get('username'), password: req.get('pass') }
           const options = { directory, db }
     
           return MysqlUtilities.restore(req, res, options);
