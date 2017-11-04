@@ -21,6 +21,7 @@
     "morgan": "^1.8.2",
     "mysql": "^2.14.1",
     "mysqldump": "^1.4.2",
-    "object.values": "^1.0.4"
+    "object.values": "^1.0.4",
+    "winston": "^2.4.0"
   }
 }

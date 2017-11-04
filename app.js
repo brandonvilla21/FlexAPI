@@ -23,8 +23,6 @@ const reports = require('./routes/reports');
 
 const utilities = require('./routes/mysql.utilities');
 
-
-
 const app = express();
 
 //CORS
