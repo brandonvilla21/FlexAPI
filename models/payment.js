@@ -205,9 +205,14 @@ Payment.insert = (payment, cb) => {
 }
 
 Payment.response = (res, error, data) => {
-    if (error)
-      res.status(500).json(error);
-    else
+  if (error) {
+    // Save log in file
+    logger.error(`Error on customer: ${JSON.stringify(error)}`)
+    // Save log in DB
+    error.message = 'Error on payment';
+    Pool.log( error )    
+    res.status(500).json(error);
+  } else
       res.status(200).json(data);
 }
   

@@ -221,8 +221,14 @@ Devolution.insert = (devolution, cb) => {
 }
 
 Devolution.response = (res, error, data) => {
-    if (error)
+    if (error) {
+      // Save log in file
+      logger.error(`Error on customer: ${JSON.stringify(error)}`)
+      // Save log in DB
+      error.message = 'Error on devolution';
+      Pool.log( error )    
       res.status(500).json(error);
+    }
     else
       res.status(200).json(data);
 }

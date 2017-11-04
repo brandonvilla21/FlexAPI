@@ -1,4 +1,6 @@
 const connection = require('../config/db-connection');
+const logger = require('../config/logger');
+const Pool = require('../config/db-logger-connection');
 
 let Customer = {}
 
@@ -96,9 +98,15 @@ Customer.remove = ( id, cb ) => {
 }
 
 Customer.response = (res, error, data) => {
-    if ( error )
+    if ( error ) {
+        // Save log in file
+        logger.error(`Error on customer: ${JSON.stringify(error)}`)
+        // Save log in DB
+        error.message = 'Error on customer';
+        Pool.log( error )        
         res.status(500).json(error);
-    else
+    }
+    else 
         res.status(200).json(data);
 }
 

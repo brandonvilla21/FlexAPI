@@ -23,6 +23,7 @@
     "mysql": "^2.14.1",
     "mysqldump": "^1.4.2",
     "node-mysql-importer": "0.0.10",
-    "object.values": "^1.0.4"
+    "object.values": "^1.0.4",
+    "winston": "^2.4.0"
   }
 }
