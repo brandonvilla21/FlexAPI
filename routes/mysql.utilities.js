@@ -33,7 +33,8 @@ router
         database: process.env.DB_NAME,
         user: db.username,
         password: db.password,
-        ifNotExist: true, // Create table if not exist 
+        ifNotExist: true, // Create table if not exist,
+        port: process.env.DB_PORT,
         dest: `${directory}${process.env.DB_NAME}_backup.sql` // destination file 
       },  (err) => {
         if (err)
