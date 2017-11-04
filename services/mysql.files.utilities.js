@@ -31,8 +31,8 @@ MysqlUtilities.restore = (req, res, options) => {
 
     error => {
       if (error) res.status(500).json(error);
-      res.status(200).json({ message: "Success while restoring database." });
-      console.log("Success en Waterfall :v");
+      res.status(200).json({ sqlMessage: "Success while restoring database." });
+      console.log("Success");
     });
 
 }
@@ -60,6 +60,10 @@ function importDatabase(req, res, username, password, upload, cb) {
   conn.connect(err => {
     if (err) {
       console.log('Error trying to connect with Data Base: ' + err.stack);
+
+      if(err.sqlState == 28000)
+        return cb({sqlMessage: 'Invalid username or password.'});
+        
       return cb(err);
     }
 
