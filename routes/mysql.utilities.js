@@ -28,8 +28,6 @@ router
   })
 
   .post('/restore', (req, res, next) => {
-        console.log("req.getUser", req.get('username'));
-        console.log("req.getPass", req.get('pass'));
         mkdirp(directory, (err) => {
           if (err) return res.status(500).json({message: "Error handling directories on the backend."});
           

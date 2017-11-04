@@ -26,16 +26,14 @@ MysqlUtilities.restore = (req, res, options) => {
 
   async.waterfall([
     cb => { setFileEnvironment(req, res, options, cb) },
-    (req, res, upload, cb) => { importDatabase(req, res, options.db.username, options.db.password, upload, cb) },
-    // (req, res, upload, cb) => { upload(req, res, upload, cb) },
+    (req, res, upload, cb) => { importDatabase(req, res, options.db.username, options.db.password, upload, cb) }
   ],
 
     error => {
       if (error) res.status(500).json(error);
-      res.status(200).json({ message: "Success" });
+      res.status(200).json({ message: "Success while restoring database." });
       console.log("Success en Waterfall :v");
     });
-  // importDatabase(options.db.username, options.db.password);
 
 }
 
@@ -68,29 +66,35 @@ function importDatabase(req, res, username, password, upload, cb) {
     console.log('Valid Credentials');
 
 
-    try {
+
+    conn.query("CALL procDropAllTables()", (error, result) => {
+      if (error) return cb(error);
 
       //Importing database.
       importer.importSQL('./temp/uploadedRestore.sql')
         .then(() => {
-          upload(req, res, err => {
-            console.log(req.file);
 
+
+          upload(req, res, err => {
+
+            console.log(req.file);
             if (err) return cb(err);
-            conn.destroy();
+
+            conn.end();
             return cb(null);
+
           });
 
-        }).catch(err => {
-          console.log(`error on Promise.catch: ${err}`);
-          conn.destroy();
 
+        }).catch(err => {
+          
+          console.log(`error on Promise.catch: ${err}`);
+          conn.end();
           return cb(err);
+
         })
-    } catch (error) {
-      console.log(`error on try.catch: ${error}`);
-      return cb(error);
-    }
+    })
+
   });
 
 }
