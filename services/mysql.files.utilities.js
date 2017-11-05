@@ -26,7 +26,7 @@ MysqlUtilities.restore = (req, res, options) => {
 
   async.waterfall([
     cb => { setFileEnvironment(req, res, options, cb) },
-    (req, res, upload, cb) => { importDatabase(req, res, options.db.username, options.db.password, upload, cb) }
+    (req, res, cb) => { importDatabase(req, res, options.db.username, options.db.password, cb) }
   ],
 
     error => {
@@ -38,7 +38,7 @@ MysqlUtilities.restore = (req, res, options) => {
 }
 
 
-function importDatabase(req, res, username, password, upload, cb) {
+function importDatabase(req, res, username, password, cb) {
 
   importer.config({
     'host': process.env.DB_HOST,
@@ -77,19 +77,8 @@ function importDatabase(req, res, username, password, upload, cb) {
       //Importing database.
       importer.importSQL('./temp/uploadedRestore.sql')
         .then(() => {
-
-
-          upload(req, res, err => {
-
-            console.log(req.file);
-            if (err) return cb(err);
-
-            conn.end();
-            return cb(null);
-
-          });
-
-
+          conn.end();
+          return cb(null);
         }).catch(err => {
           
           console.log(`error on Promise.catch: ${err}`);
@@ -108,20 +97,25 @@ function setFileEnvironment(req, res, options, cb) {
 
   let storage = multer.diskStorage({ //multers disk storage settings
     destination: (req, file, cb) => {
-      cb(null, options.directory);
+      return cb(null, options.directory);
     },
     filename: (req, file, cb) => {
       const datetimestamp = Date.now();
-      cb(null, 'uploadedRestore' + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
+      return cb(null, 'uploadedRestore' + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
     }
   });
 
 
-  let = upload = multer({ //multer settings
+  let upload = multer({ //multer settings
     storage: storage
   }).single('file');
 
-  cb(null, req, res, upload);
+  upload(req, res, err => {
+    if (err) return cb(err);
+
+    return cb(null, req, res)
+
+  });
 
 }
 
