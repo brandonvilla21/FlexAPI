@@ -15,7 +15,7 @@ MysqlUtilities.backup = (res, options) => {
     dest: `${options.directory}${process.env.DB_NAME}_backup.sql` // destination file 
   }, (err) => {
     if (err)
-      return res.status(500).json({ message: "Wrong credentials." });
+      return res.status(500).json({ message: "Credenciales incorrectas." });
     else
       return res.download(`${options.directory}${process.env.DB_NAME}_backup.sql`);
 
@@ -31,7 +31,7 @@ MysqlUtilities.restore = (req, res, options) => {
 
     error => {
       if (error) res.status(500).json(error);
-      res.status(200).json({ sqlMessage: "Success while restoring database." });
+      res.status(200).json({ sqlMessage: "Éxito restaurando la base de datos." });
       console.log("Success");
     });
 
@@ -62,7 +62,7 @@ function importDatabase(req, res, username, password, cb) {
       console.log('Error trying to connect with Data Base: ' + err.stack);
 
       if(err.sqlState == 28000)
-        return cb({sqlMessage: 'Invalid username or password.'});
+        return cb({sqlMessage: 'Username o password incorrecto.'});
         
       return cb(err);
     }
