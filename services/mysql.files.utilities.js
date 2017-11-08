@@ -12,6 +12,7 @@ MysqlUtilities.backup = (res, options) => {
     database: process.env.DB_NAME,
     user: options.db.username,
     password: options.db.password,
+    port: process.env.DB_PORT,
     dest: `${options.directory}${process.env.DB_NAME}_backup.sql` // destination file 
   }, (err) => {
     if (err)
@@ -44,6 +45,7 @@ function importDatabase(req, res, username, password, cb) {
     'host': process.env.DB_HOST,
     'user': username,
     'password': password,
+    'port': process.env.DB_PORT,    
     'database': process.env.DB_NAME
   });
 
