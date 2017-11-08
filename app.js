@@ -61,7 +61,7 @@ if(cluster.isMaster){
   app.use(bodyParser.json());
   
   // Point static path to dist
-  app.use(express.static(path.join(__dirname, 'client')));
+  app.use(express.static(path.join(__dirname, 'public')));
   
   //Warehouses
   app.use('/product', products);
