@@ -38,7 +38,10 @@ SaleProduct.general = cb => {
 
 SaleProduct.count = cb => {
   if ( connection ) {
-      connection.query('SELECT COUNT (sale_id) AS number_of_sale FROM saleProduct', (error, result) => {
+      connection.query(`SELECT \`AUTO_INCREMENT\` AS number_of_sale
+      FROM  INFORMATION_SCHEMA.TABLES
+      WHERE TABLE_SCHEMA = 'flex_admin'
+      AND   TABLE_NAME   = 'saleProduct';`, (error, result) => {
           if (error)
               return cb(error);
           return cb(null, result);

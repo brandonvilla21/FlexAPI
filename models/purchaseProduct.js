@@ -29,7 +29,10 @@ PurchaseProduct.general = cb => {
 
 PurchaseProduct.count = cb => {
     if ( connection ) {
-        connection.query('SELECT COUNT (purchase_id) AS number_of_purchase FROM purchaseProduct', (error, result) => {
+        connection.query(`SELECT \`AUTO_INCREMENT\` AS number_of_purchase
+        FROM  INFORMATION_SCHEMA.TABLES
+        WHERE TABLE_SCHEMA = 'flex_admin'
+        AND   TABLE_NAME   = 'purchaseProduct';`, (error, result) => {
             if (error)
                 return cb(error);
             return cb(null, result);
