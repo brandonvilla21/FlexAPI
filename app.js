@@ -33,7 +33,7 @@ if(cluster.isMaster){
   const jwt = require('jsonwebtoken');
   const path = require('path');
   
-  //Route importation.
+  // Route importation.
   const products = require('./routes/products');
   const customer = require('./routes/customers');
   const employee = require('./routes/employees');
@@ -49,11 +49,11 @@ if(cluster.isMaster){
   
   const utilities = require('./routes/mysql.utilities');
   
-  
+  const historic = require('./routes/mysql.historic');
   
   const app = express();
   
-  //CORS
+  // CORS
   app.use(cors({ origin:true, credentials: true }));
   
   app.use(morgan('dev'));
@@ -63,25 +63,27 @@ if(cluster.isMaster){
   // Point static path to dist
   app.use(express.static(path.join(__dirname, 'public')));
   
-  //Warehouses
+  // Warehouses
   app.use('/product', products);
   app.use('/customer', customer);
   app.use('/employee', employee);
   app.use('/provider', provider);
   app.use('/user', user);
   
-  //Processes.
+  // Processes.
   app.use('/purchaseProduct', purchaseProduct);
   app.use('/saleProduct', saleProduct);
   app.use('/devolution', devolution);
   app.use('/payment', payment);
   
-  //Reports
+  // Reports
   app.use('/reports', reports)
   
-  //Mysql utilities
+  // Mysql utilities
   app.use('/utilities', utilities)
   
+  // MySQL Historic
+  app.use('/historic', historic)
   
   app.listen(process.env.PORT || 5000);
   console.log(`Worker ${cluster.worker.id} running!`);
