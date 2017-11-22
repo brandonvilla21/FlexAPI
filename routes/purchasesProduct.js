@@ -46,7 +46,7 @@ router
         const purchaseProduct = {
             purchase_id: null,
             provider_id: req.body.provider_id,
-            purchase_date: req.body.purchase_date,
+            purchase_date: require('moment')(req.body.purchase_date).format('YYYY-MM-DD'),
             subtotal: req.body.subtotal,
             discount: req.body.discount,
             total: req.body.total            
