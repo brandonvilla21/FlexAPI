@@ -2,6 +2,8 @@ const connection = require('../config/db-connection');
 const values = require('object.values');
 const async = require('async');
 const dynamicQueries = require('../services/dynamic.queries.service');
+const logger = require('../config/logger');
+const Pool = require('../config/db-logger-connection');
 
 let SaleProduct = {}
 
@@ -260,7 +262,7 @@ SaleProduct.insert = (saleProduct, detailRows, updateRows, cb) => {
 SaleProduct.response = (res, error, data) => {
   if (error) {
     // Save log in file
-    logger.error(`Error on customer: ${JSON.stringify(error)}`)
+    logger.error(`Error on saleProduct: ${JSON.stringify(error)}`)
     // Save log in DB
     error.message = 'Error on Sale Product';
     Pool.log( error )    
