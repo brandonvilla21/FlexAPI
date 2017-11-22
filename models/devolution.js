@@ -153,7 +153,7 @@ Devolution.insert = (devolution, cb) => {
             },
 
             next => {
-              connection.query(`SELECT * FROM product_saleproduct WHERE sale_id = ?`, [devolution.sale_id], (error, result) => {
+              connection.query(`SELECT * FROM product_saleProduct WHERE sale_id = ?`, [devolution.sale_id], (error, result) => {
                 if (error)
                   next(error);
                 else {
