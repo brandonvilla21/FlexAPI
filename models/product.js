@@ -17,7 +17,6 @@ Product.all = cb => {
     
 }
 
-
 Product.findById = (id, cb) => {
     if (conn) {
         conn.query("SELECT * FROM product WHERE product_id = ?", [id], (error, row) => {
@@ -41,6 +40,29 @@ Product.insert = (product, cb) => {
         conn.beginTransaction( err => {
             if (err) return cb( err );
             conn.query('INSERT INTO product SET ?', [product], (error, result) => {
+                if(error) 
+                    return conn.rollback( () => {
+                        return cb(error);
+                    });
+                    conn.commit( err => {
+                        if (error)
+                            return conn.rollback( () => {
+                                return cb(error);
+                            });
+                        console.log("Success!");
+                        return cb(null, result);
+                    });
+            });
+        });
+    } else
+        return cb('Connection refused');
+}
+
+Product.multipleInserts = (products, cb) => {
+    if(conn) {
+        conn.beginTransaction( err => {
+            if (err) return cb( err );
+            conn.query('INSERT INTO product(product_id, description, brand, flavor, expiration_date, sale_price, buy_price, existence, max, min) VALUES ?', [products], (error, result) => {
                 if(error) 
                     return conn.rollback( () => {
                         return cb(error);

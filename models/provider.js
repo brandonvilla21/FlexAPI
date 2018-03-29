@@ -59,6 +59,31 @@ Provider.insert = ( provider, cb ) => {
         return cb('Connection refused!');
 }
 
+Provider.multipleInserts = ( providers, cb ) => {
+    if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query('INSERT INTO provider(provider_id, name, description, contact, email, phone) VALUES ?', [providers], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result.insertId );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
+
 Provider.update = (provider, cb) => {
     
     if ( connection ) {

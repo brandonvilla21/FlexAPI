@@ -59,6 +59,31 @@ Employee.insert = ( employee, cb ) => {
         return cb('Connection refused!');
 }
 
+Employee.multipleInserts = ( employees, cb ) => {
+    if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query('INSERT INTO employee (employee_id, name, lastname, address, whatsapp) VALUES ?', [employees], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
+
 Employee.update = (employee, cb) => {
     
     if ( connection ) {

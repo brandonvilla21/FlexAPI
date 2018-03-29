@@ -59,6 +59,31 @@ Customer.insert = ( customer, cb ) => {
         return cb('Connection refused!');
 }
 
+Customer.multipleInserts = ( customers, cb ) => {
+if ( connection ) {
+        connection.beginTransaction( error => {
+            if ( error )
+                return cb( error );
+
+            connection.query('INSERT INTO customer (customer_id, name, lastname, reference, whatsapp, facebook, balance) VALUES ?', [customers], (error, result) => {
+                if ( error )
+                    return connection.rollback( () => {
+                        return cb ( error );
+                    });
+                connection.commit( error => {
+                    if ( error )
+                        return connection.rollback( () => {
+                            return cb ( error );
+                        });
+                    console.log('Success!');
+                    return cb( null, result );
+                });
+            });
+        });
+    } else 
+        return cb('Connection refused!');
+}
+
 Customer.update = (customer, cb) => {
     
     if ( connection ) {
