@@ -153,7 +153,7 @@ Devolution.insert = (devolution, cb) => {
             },
 
             next => {
-              connection.query(`SELECT * FROM product_saleproduct WHERE sale_id = ?`, [devolution.sale_id], (error, result) => {
+              connection.query(`SELECT * FROM product_saleProduct WHERE sale_id = ?`, [devolution.sale_id], (error, result) => {
                 if (error)
                   next(error);
                 else {
@@ -225,7 +225,7 @@ Devolution.insert = (devolution, cb) => {
 Devolution.response = (res, error, data) => {
     if (error) {
       // Save log in file
-      logger.error(`Error on customer: ${JSON.stringify(error)}`)
+      logger.error(`Error on devolution: ${JSON.stringify(error)}`)
       // Save log in DB
       error.message = 'Error on devolution';
       Pool.log( error )    

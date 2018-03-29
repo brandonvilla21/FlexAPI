@@ -39,7 +39,7 @@ router
             devolution_id: null,
             sale_id: req.body.sale_id,
             employee_id: req.body.employee_id,
-            devolution_date: req.body.devolution_date,
+            devolution_date: require('moment')(req.body.devolution_date).format('YYYY-MM-DD'),
             total_returned: req.body.total_returned,
             concept: req.body.concept            
         }

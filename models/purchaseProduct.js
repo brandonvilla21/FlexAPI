@@ -230,7 +230,7 @@ PurchaseProduct.insert = (purchaseProduct, detailRows, updateRows, cb) => {
 PurchaseProduct.response = (res, error, data) => {
   if (error) {
     // Save log in file
-    logger.error(`Error on customer: ${JSON.stringify(error)}`)
+    logger.error(`Error on purchaseProduct: ${JSON.stringify(error)}`)
     // Save log in DB
     error.message = 'Error on Purchase Product';
     Pool.log( error )    
