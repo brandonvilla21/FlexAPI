@@ -2,6 +2,8 @@ const connection = require('../config/db-connection');
 const values = require('object.values');
 const async = require('async');
 const dynamicQueries = require('../services/dynamic.queries.service');
+const logger = require('../config/logger');
+const Pool = require('../config/db-logger-connection');
 
 let Devolution = {};
 

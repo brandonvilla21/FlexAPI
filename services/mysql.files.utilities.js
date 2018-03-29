@@ -3,6 +3,7 @@ const multer = require('multer');
 const async = require('async');
 const importer = require('node-mysql-importer');
 const mysql = require('mysql');
+const csv = require('csvtojson');
 
 let MysqlUtilities = {};
 
@@ -38,6 +39,58 @@ MysqlUtilities.restore = (req, res, options) => {
 
 }
 
+MysqlUtilities.importFile = (req, res, options) => {
+
+  async.waterfall([
+    cb => { setFileEnvironment(req, res, options, cb)},
+    (req, res, fileName, cb) => parseCsvToJSON(`./temp/${fileName}`, cb),
+    (json, cb) => {
+      const { modelName } = options;
+      // In order to this can work, every model requested needs to have an insert method
+      const routeModel = `../models/${modelName}`;
+      const Model = require(routeModel);
+      insertJSONtoTable(json, Model, cb);
+    }
+  ],
+
+    error => {
+      if (error) res.status(500).json(error);
+      res.status(200).json({ sqlMessage: "Éxito importando el archivo csv." });
+      console.log("Success");
+    });
+
+}
+
+function insertJSONtoTable(json, Model, cb) {
+  const values = parseJSONtoArray(json);
+  console.log(values);
+  Model.multipleInserts(values, (err, result) => {
+    return err ? cb(err) : cb(null, result);
+  });
+}
+
+function parseJSONtoArray(json) {
+  const array = [];
+  json.forEach( object => {
+    let newArray = [];
+    for (const key in object) {
+      newArray.push(object[key]);
+    }
+    array.push(newArray);
+  });
+  return array;
+}
+
+function parseCsvToJSON(csvFilePath, cb) {
+  const json = [];
+  csv()
+    // From the route file given 
+    .fromFile(csvFilePath)
+    // This method will be called n times where n = number of rows in csv file
+    .on('json', (jsonObj) => json.push(jsonObj) )
+    // This method will be called once the whole file has been parsed
+    .on('done', (error) => error ? cb(error) : cb(null, json) );
+}
 
 function importDatabase(req, res, username, password, cb) {
 
@@ -96,6 +149,7 @@ function importDatabase(req, res, username, password, cb) {
 
 
 function setFileEnvironment(req, res, options, cb) {
+  let fileName = null;
 
   let storage = multer.diskStorage({ //multers disk storage settings
     destination: (req, file, cb) => {
@@ -103,7 +157,13 @@ function setFileEnvironment(req, res, options, cb) {
     },
     filename: (req, file, cb) => {
       const datetimestamp = Date.now();
-      return cb(null, 'uploadedRestore' + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
+      // If object options has fileName property, it will take that as the name of the file
+      // Otherwise it will take the name of the file as it came from the client
+      fileName = options.fileName
+        ? `${options.fileName}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`
+        : `${file.originalname.split('.')[0]}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
+
+      return cb(null, fileName);
     }
   });
 
@@ -115,7 +175,7 @@ function setFileEnvironment(req, res, options, cb) {
   upload(req, res, err => {
     if (err) return cb(err);
 
-    return cb(null, req, res)
+    return cb(null, req, res, fileName)
 
   });
 

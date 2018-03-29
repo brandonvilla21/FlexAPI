@@ -1,4 +1,6 @@
 const connection = require('../config/db-connection');
+const logger = require('../config/logger');
+const Pool = require('../config/db-logger-connection');
 
 let Employee = {}
 

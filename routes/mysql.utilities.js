@@ -32,12 +32,23 @@ router
           if (err) return res.status(500).json({message: "Error handling directories on the backend."});
           
           const db = { username: req.get('username'), password: req.get('pass') }
-          const options = { directory, db }
-    
+          const fileName = 'uploadedRestore';
+          const options = { directory, db, fileName }
           return MysqlUtilities.restore(req, res, options);
         });
     
-      })
+  })
+  
+  .post('/import-file', (req, res, next) => {
+      mkdirp(directory, (err) => {
+        if (err) return res.status(500).json({message: "Error handling directories on the backend."});
+        
+        const modelName = req.get('modelName');
+        const options = { directory, modelName };
+        return MysqlUtilities.importFile(req, res, options);
+      });
+    
+  })
 
 
 
