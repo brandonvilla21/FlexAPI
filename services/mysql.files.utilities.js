@@ -46,7 +46,7 @@ MysqlUtilities.importFile = (req, res, options) => {
     (req, res, fileName, cb) => parseCsvToJSON(`./temp/${fileName}`, cb),
     (json, cb) => {
       const { modelName } = options;
-      // In order to this can work, every model requested needs to have an insert method
+      // In order to this can work, every model requested needs to have a multipleInserts method
       const routeModel = `../models/${modelName}`;
       const Model = require(routeModel);
       insertJSONtoTable(json, Model, cb);
@@ -63,7 +63,6 @@ MysqlUtilities.importFile = (req, res, options) => {
 
 function insertJSONtoTable(json, Model, cb) {
   const values = parseJSONtoArray(json);
-  console.log(values);
   Model.multipleInserts(values, (err, result) => {
     return err ? cb(err) : cb(null, result);
   });
