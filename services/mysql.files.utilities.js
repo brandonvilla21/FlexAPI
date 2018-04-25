@@ -27,7 +27,7 @@ MysqlUtilities.backup = (res, options) => {
 MysqlUtilities.restore = (req, res, options) => {
 
   async.waterfall([
-    cb => { setFileEnvironment(req, res, options, cb) },
+    cb => { setFileEnvironmentRestore(req, res, options, cb) },
     (req, res, cb) => { importDatabase(req, res, options.db.username, options.db.password, cb) }
   ],
 
@@ -42,7 +42,7 @@ MysqlUtilities.restore = (req, res, options) => {
 MysqlUtilities.importFile = (req, res, options) => {
 
   async.waterfall([
-    cb => { setFileEnvironment(req, res, options, cb)},
+    cb => { setFileEnvironmentImportCSV(req, res, options, cb)},
     (req, res, fileName, cb) => parseCsvToJSON(`./temp/${fileName}`, cb),
     (json, cb) => {
       const { modelName } = options;
@@ -147,7 +147,41 @@ function importDatabase(req, res, username, password, cb) {
 }
 
 
-function setFileEnvironment(req, res, options, cb) {
+function setFileEnvironmentRestore(req, res, options, cb) {
+  let fileName = null;
+
+  let storage = multer.diskStorage({ //multers disk storage settings
+    destination: (req, file, cb) => {
+      return cb(null, options.directory);
+    },
+    filename: (req, file, cb) => {
+      const datetimestamp = Date.now();
+      // If object options has fileName property, it will take that as the name of the file
+      // Otherwise it will take the name of the file as it came from the client
+      fileName = options.fileName
+        ? `${options.fileName}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`
+        : `${file.originalname.split('.')[0]}.${file.originalname.split('.')[file.originalname.split('.').length - 1]}`;
+
+      return cb(null, fileName);
+    }
+  });
+
+
+  let upload = multer({ //multer settings
+    storage: storage
+  }).single('file');
+
+  upload(req, res, err => {
+    if (err) return cb(err);
+
+    return cb(null, req, res)
+
+  });
+
+}
+
+
+function setFileEnvironmentImportCSV(req, res, options, cb) {
   let fileName = null;
 
   let storage = multer.diskStorage({ //multers disk storage settings
