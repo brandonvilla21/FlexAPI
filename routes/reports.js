@@ -23,6 +23,15 @@ router
             return Report.response(res, error, data);
         });
     })
+    .get('/getPaymentsByEmployee/:employeeId', (req, res, next) => {
+
+      const employeeId = req.params.employeeId;
+
+      Report.getPaymentsByEmployee( employeeId, (error, data) => {
+        return Report.response(res, error, data);
+      });
+
+    })
     .get('/getTableData/:table', (req, res, next) => {
         const tableName = req.params.table;
         Report.getTableData( tableName, (error, data) => {

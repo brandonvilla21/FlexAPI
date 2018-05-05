@@ -65,6 +65,27 @@ Report.getProductsWMinExistence = cb => {
         return cb('Connection refused!');
 }
 
+Report.getPaymentsByEmployee = (employeeId, cb) => {
+  if (connection) {
+      connection.beginTransaction( error => {
+        if (error) return cb(error);
+
+        connection.query(`
+          SELECT * FROM payment AS P 
+          WHERE P.employee_id = ?`,
+          [employeeId], 
+          (error, result) => {
+            if (error) {
+            return cb(error);
+          }
+          return cb(null, result);
+        })
+
+      })
+    } else
+      return cb('Connection refused!');
+}
+
 Report.getTableData =  (tableName, cb) => {
   if ( connection )
       connection.query('CALL getTableData(?)', 
