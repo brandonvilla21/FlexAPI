@@ -208,7 +208,7 @@ Report.getMostSelledProducts = (numberOfProducts, cb) => {
       return cb('Connection refused!');
 }
 
-Report.getMostFlavorsWanted = (numberOfFlavors, cb) => {
+Report.getMostWantedFlavors = (numberOfFlavors, cb) => {
   if (connection) {
 
         waterfall([
