@@ -93,5 +93,12 @@ router
             return Report.response(res, error, data);
         });
     })
+    .get('/getMostFlavorsWanted', (req, res, next) => {
+        Report.getMostFlavorsWanted( 
+            req.body.numberOfFlavors,
+            (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })
 
 module.exports = router;

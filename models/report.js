@@ -208,6 +208,100 @@ Report.getMostSelledProducts = (numberOfProducts, cb) => {
       return cb('Connection refused!');
 }
 
+Report.getMostFlavorsWanted = (numberOfFlavors, cb) => {
+  if (connection) {
+
+        waterfall([
+
+           //Get all the sales with product information
+           next => {
+
+            connection.query(`
+            SELECT product_saleProduct.*, product.*
+            FROM product_saleProduct
+            INNER JOIN product ON product.product_id = product_saleProduct.product_id`, (error, sales) => {
+            if (error) {
+              console.log('error: ', error);
+              return next(error);
+            } else 
+              return next(null, sales);
+            });
+
+          },
+
+          (sales, next) => {
+            const flavors = {
+              VAINILLA: {
+                name: 'VAINILLA',
+                products: 0,
+              },
+              CHOCOLATE: {
+                name: 'CHOCOLATE',
+                products: 0,
+              },
+              FRESA: {
+                name: 'FRESA',
+                products: 0,
+              },
+              COOKIES: {
+                name: 'COOKIES',
+                products: 0,
+              },
+              CEREZA: {
+                name: 'CEREZA',
+                products: 0,
+              },
+              NUEZ: {
+                name: 'NUEZ',
+                products: 0,
+              },
+              PINA: {
+                name: 'PIÑA',
+                products: 0,
+              },
+              DURAZNO: {
+                name: 'DURAZNO',
+                products: 0,
+              },
+              OTRO: {
+                name: 'OTRO',
+                products: 0,
+              },
+            };
+
+            // Loops all sales to collect the flavor product an its amount
+            sales.forEach( sale => {
+              if ( flavors[sale.flavor] )
+                flavors[sale.flavor].products = flavors[sale.flavor].products + sale.amount;
+            });
+            
+            // Convert object to array so it can be sorted and returned
+            const sortable = [];
+            for( flavor in flavors )
+              sortable.push(flavors[flavor]);
+
+            sortable.sort((a, b) => 
+              parseFloat(b.products) - parseFloat(a.products)
+            );
+
+            return process.nextTick(() => next(null, sortable.slice(0, numberOfFlavors)));
+
+          },
+
+         
+        ],
+          (err, items) => {
+            if (err)
+              return cb(err)
+            else
+              return cb(null, items);
+          });
+
+        
+    } else
+      return cb('Connection refused!');
+}
+
 Report.getMissingProductsByMin = cb => {
   if ( !connection )
     return cb('Connection refused!');
