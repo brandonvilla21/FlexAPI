@@ -81,11 +81,17 @@ router
       });
   })
   .post('/getMostSelledProducts', (req, res, next) => {
-    Report.getMostSelledProducts( 
-        req.body.numberOfProducts,
-        (error, data) => {
-        return Report.response(res, error, data);
-    });
-})
+        Report.getMostSelledProducts( 
+            req.body.numberOfProducts,
+            (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })
+  .get('/getMissingProductsByMin', (req, res, next) => {
+        Report.getMissingProductsByMin(
+            (error, data) => {
+            return Report.response(res, error, data);
+        });
+    })
 
 module.exports = router;

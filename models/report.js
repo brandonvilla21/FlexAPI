@@ -208,6 +208,16 @@ Report.getMostSelledProducts = (numberOfProducts, cb) => {
       return cb('Connection refused!');
 }
 
+Report.getMissingProductsByMin = cb => {
+  if ( !connection )
+    return cb('Connection refused!');
+  connection.query(`SELECT * FROM product WHERE existence < min`, (err, products) => {
+    if ( err )
+      return cb(err);
+    return cb(null, products);
+  })
+}
+
 
 Report.response = (res, error, data) => {
   if (error) {
