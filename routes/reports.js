@@ -93,7 +93,7 @@ router
             return Report.response(res, error, data);
         });
     })
-    .get('/getMostWantedFlavors', (req, res, next) => {
+    .post('/getMostWantedFlavors', (req, res, next) => {
         Report.getMostWantedFlavors( 
             req.body.numberOfFlavors,
             (error, data) => {
